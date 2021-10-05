@@ -30,15 +30,18 @@ class FiniteAutomatonEvaluator(
             symbol: Symbol to consume.
 
         """
-        print(self.current_states)
+        new_states = set()
         if symbol in self.automaton.symbols:
-            new_states = set()
             for st in self.current_states:
                 for tr in self.automaton.transitions:
                     if tr.initial_state == st and tr.symbol == symbol:
                         new_states.add(tr.final_state)
-        self.current_states = new_states.copy()
-        self._complete_lambdas(new_states)
+        else:
+            raise ValueError('Símbolo no recogido en el alfabeto')
+
+        self.current_states = new_states
+        #print("Current states process_symbol: ", self.current_states)
+        self._complete_lambdas(self.current_states)
 
     def _complete_lambdas(self, set_to_complete: Set[State]) -> None:
         """
@@ -50,16 +53,16 @@ class FiniteAutomatonEvaluator(
         Args:
             set_to_complete: Current set of states to be completed.
         """
-        #print(self.current_states)
         list_to_complete = list(set_to_complete)
         length_list = len(list_to_complete)
-        for i in range(length_list):
+        i = 0
+        while(i < length_list):
             for tr in self.automaton.transitions:
-                if tr.initial_state == list_to_complete[i] and tr.symbol == None and not tr.final_state in self.current_states:
-
-                    self.current_states.add(tr.final_state)
-                    list_to_complete += tr.final_state
-                    length += 1
+                if tr.initial_state == list_to_complete[i] and tr.symbol == None and not tr.final_state in set_to_complete:
+                    set_to_complete.add(tr.final_state)
+                    list_to_complete.append(tr.final_state)
+                    length_list += 1
+            i += 1
 
     def is_accepting(self) -> bool:
         """Check if the current state is an accepting one."""

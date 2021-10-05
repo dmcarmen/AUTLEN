@@ -10,26 +10,22 @@ def _create_automata():
 
     description = """
     Automaton:
-        Symbols: Helo
+        Symbols:
 
-        Empty
-        H
-        He
-        Hel
-        Hell
-        Hello final
+        1
+        2
+        3
+        4 final
 
-        --> Empty
-        Empty -H-> H
-        H -e-> He
-        He -l-> Hel
-        Hel -l-> Hell
-        Hell -o-> Hello
+        --> 1
+        1 --> 2
+        2 --> 3
+        3 --> 4
     """
 
     return AutomataFormat.read(description)
 
 automaton = _create_automata()
 evaluator = FiniteAutomatonEvaluator(automaton)
-evaluator.process_string('Hello')
+evaluator.process_string('')
 print(evaluator.current_states)
