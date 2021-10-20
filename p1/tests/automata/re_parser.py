@@ -66,8 +66,14 @@ class REParser(AbstractREParser):
             transitions.add(Transition(state, None, automaton.initial_state))
             transitions.add(Transition(state, None, final_state))
 
-        states = set(a_states)
-        states.update({initial_state, final_state})
+        states = set()
+        states.add(initial_state)
+        for t in transitions:
+            for s in (t.initial_state, t.final_state):
+                if s not in states:
+                    states.add(s)
+        #states = set(a_states)
+        #states.update({initial_state, final_state})
 
         return FiniteAutomaton(initial_state = initial_state, states = states, symbols = symbols, transitions = transitions)
 
@@ -110,9 +116,15 @@ class REParser(AbstractREParser):
         for state in pre_final_states:
             transitions.add(Transition(state, None, final_state))
 
-        states = set(a1_states)
-        states.update(a2_states)
-        states.update({initial_state, final_state})
+        states = set()
+        states.add(initial_state)
+        for t in transitions:
+            for s in (t.initial_state, t.final_state):
+                if s not in states:
+                    states.add(s)
+        #states = set(a1_states)
+        #states.update(a2_states)
+        #states.update({initial_state, final_state})
 
         return FiniteAutomaton(initial_state = initial_state, states = states, symbols = symbols, transitions = transitions)
 
@@ -150,7 +162,13 @@ class REParser(AbstractREParser):
         for state in a1_final_states:
             transitions.add(Transition(state, None, automaton2.initial_state))
 
-        states = set(a1_states)
-        states.update(a2_states)
+        states = set()
+        states.add(initial_state)
+        for t in transitions:
+            for s in (t.initial_state, t.final_state):
+                if s not in states:
+                    states.add(s)
+        #states = set(a1_states)
+        #states.update(a2_states)
 
         return FiniteAutomaton(initial_state = initial_state, states = states, symbols = symbols, transitions = transitions)
