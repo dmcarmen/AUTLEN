@@ -7,41 +7,41 @@ class REParser(AbstractREParser):
     """Class for processing regular expressions in Kleene's syntax."""
 
     def _create_automaton_empty(
-        self,
+            self,
     ) -> FiniteAutomaton:
-        initial_state = State("q0", is_final = False)
-        final_state = State("qf", is_final = True)
+        initial_state = State("q0", is_final=False)
+        final_state = State("qf", is_final=True)
         states = set({initial_state, final_state})
         symbols = None
         transitions = None
-        return FiniteAutomaton(initial_state = initial_state, states = states, symbols = symbols, transitions = transitions)
+        return FiniteAutomaton(initial_state=initial_state, states=states, symbols=symbols, transitions=transitions)
 
     def _create_automaton_lambda(
-        self,
+            self,
     ) -> FiniteAutomaton:
-        initial_state = State("q0", is_final = True)
+        initial_state = State("q0", is_final=True)
         states = set({initial_state})
         symbols = None
         transitions = None
-        return FiniteAutomaton(initial_state = initial_state, states = states, symbols = symbols, transitions = transitions)
+        return FiniteAutomaton(initial_state=initial_state, states=states, symbols=symbols, transitions=transitions)
 
     def _create_automaton_symbol(
-        self,
-        symbol: str,
+            self,
+            symbol: str,
     ) -> FiniteAutomaton:
-        initial_state = State("q0", is_final = False)
-        final_state = State("qf", is_final = True)
+        initial_state = State("q0", is_final=False)
+        final_state = State("qf", is_final=True)
         states = set({initial_state, final_state})
         symbols = set({symbol})
         transitions = set({Transition(initial_state, symbol, final_state)})
-        return FiniteAutomaton(initial_state = initial_state, states = states, symbols = symbols, transitions = transitions)
+        return FiniteAutomaton(initial_state=initial_state, states=states, symbols=symbols, transitions=transitions)
 
     def _create_automaton_star(
-        self,
-        automaton: FiniteAutomaton,
+            self,
+            automaton: FiniteAutomaton,
     ) -> FiniteAutomaton:
-        initial_state = State("q0", is_final = False)
-        final_state = State("qf", is_final = True)
+        initial_state = State("q0", is_final=False)
+        final_state = State("qf", is_final=True)
 
         a_states = set()
         self.state_counter = 0
@@ -54,12 +54,12 @@ class REParser(AbstractREParser):
 
         a_final_states = list()
         for state in automaton.states:
-            if(state.is_final):
+            if state.is_final:
                 a_final_states.append(state)
                 state.is_final = False
 
         transitions = set(automaton.transitions)
-        #Lambda transition:
+        # Lambda transition:
         transitions.add(Transition(initial_state, None, automaton.initial_state))
         transitions.add(Transition(initial_state, None, final_state))
         for state in a_final_states:
@@ -72,18 +72,18 @@ class REParser(AbstractREParser):
             for s in (t.initial_state, t.final_state):
                 if s not in states:
                     states.add(s)
-        #states = set(a_states)
-        #states.update({initial_state, final_state})
+        # states = set(a_states)
+        # states.update({initial_state, final_state})
 
-        return FiniteAutomaton(initial_state = initial_state, states = states, symbols = symbols, transitions = transitions)
+        return FiniteAutomaton(initial_state=initial_state, states=states, symbols=symbols, transitions=transitions)
 
     def _create_automaton_union(
-        self,
-        automaton1: FiniteAutomaton,
-        automaton2: FiniteAutomaton,
+            self,
+            automaton1: FiniteAutomaton,
+            automaton2: FiniteAutomaton,
     ) -> FiniteAutomaton:
-        initial_state = State("q0", is_final = False)
-        final_state = State("qf", is_final = True)
+        initial_state = State("q0", is_final=False)
+        final_state = State("qf", is_final=True)
         a1_states = automaton1.states
         a2_states = automaton2.states
 
@@ -104,13 +104,13 @@ class REParser(AbstractREParser):
 
         pre_final_states = list()
         for state in set(a1_states).union(set(a2_states)):
-            if(state.is_final):
+            if state.is_final:
                 pre_final_states.append(state)
                 state.is_final = False
 
         transitions = set(automaton1.transitions)
         transitions.update(automaton2.transitions)
-        #Lambda transition:
+        # Lambda transition:
         transitions.add(Transition(initial_state, None, automaton1.initial_state))
         transitions.add(Transition(initial_state, None, automaton2.initial_state))
         for state in pre_final_states:
@@ -122,16 +122,16 @@ class REParser(AbstractREParser):
             for s in (t.initial_state, t.final_state):
                 if s not in states:
                     states.add(s)
-        #states = set(a1_states)
-        #states.update(a2_states)
-        #states.update({initial_state, final_state})
+        # states = set(a1_states)
+        # states.update(a2_states)
+        # states.update({initial_state, final_state})
 
-        return FiniteAutomaton(initial_state = initial_state, states = states, symbols = symbols, transitions = transitions)
+        return FiniteAutomaton(initial_state=initial_state, states=states, symbols=symbols, transitions=transitions)
 
     def _create_automaton_concat(
-        self,
-        automaton1: FiniteAutomaton,
-        automaton2: FiniteAutomaton,
+            self,
+            automaton1: FiniteAutomaton,
+            automaton2: FiniteAutomaton,
     ) -> FiniteAutomaton:
         initial_state = automaton1.initial_state
 
@@ -152,13 +152,13 @@ class REParser(AbstractREParser):
 
         a1_final_states = list()
         for state in a1_states:
-            if(state.is_final):
+            if state.is_final:
                 a1_final_states.append(state)
                 state.is_final = False
 
         transitions = set(automaton1.transitions)
         transitions.update(automaton2.transitions)
-        #Lambda transition:
+        # Lambda transition:
         for state in a1_final_states:
             transitions.add(Transition(state, None, automaton2.initial_state))
 
@@ -168,7 +168,7 @@ class REParser(AbstractREParser):
             for s in (t.initial_state, t.final_state):
                 if s not in states:
                     states.add(s)
-        #states = set(a1_states)
-        #states.update(a2_states)
+        # states = set(a1_states)
+        # states.update(a2_states)
 
-        return FiniteAutomaton(initial_state = initial_state, states = states, symbols = symbols, transitions = transitions)
+        return FiniteAutomaton(initial_state=initial_state, states=states, symbols=symbols, transitions=transitions)
