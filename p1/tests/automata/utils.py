@@ -221,22 +221,9 @@ def deterministic_automata_isomorphism(
         if state1.is_final is not state2.is_final:
             return None
 
-
-
         equiv_state = equiv_map.get(state1)
-        print()
-        print(state1)
-        print(equiv_state)
-        print(state2)
-        print(id(state1))
-        if equiv_state:
-            print(id(equiv_state))
-        print(id(state2))
-
-        print()
         if equiv_state:
             if equiv_state != state2:
-                print('2')
                 return None
 
         else:
@@ -244,13 +231,11 @@ def deterministic_automata_isomorphism(
             transitions1 = transition_map1[state1]
             transitions2 = transition_map2[state2]
             if len(transitions1) != len(transitions2):
-                print('3')
                 return None
 
             for symbol, final1 in transitions1.items():
                 final2 = transitions2.get(symbol)
                 if final2 is None:
-                    print('4')
                     return None
 
                 pending.appendleft((final1, final2))

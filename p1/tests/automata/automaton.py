@@ -124,7 +124,6 @@ class FiniteAutomaton(
         i = 0
         # Iterar mientras haya estados de los que no se ha calculado las transiciones lambda
         final = state.is_final
-        print(self.transitions)
         while i < length_list:
             for tr in self.transitions:
                 if tr.initial_state == list_reachable[i] and \
@@ -140,3 +139,90 @@ class FiniteAutomaton(
         self,
     ) -> "FiniteAutomaton":
         raise NotImplementedError("This method must be implemented.")
+
+    def _set_accesibles(
+    self,
+    ) -> None:
+        accesibles = [self.initial_state]
+        i = 0
+        while i < len(accesibles):
+            for tr in self.transitions:
+                if tr.initial_state == accesibles[i]:
+                    if tr.final_state not in accesibles:
+                        accesibles.append(tr.final_state)
+        new_transitions = []
+        for tr in self.transitions:
+            if tr.initial_state in accesibles and tr.final_state in accesibles:
+                new_transitions.append(tr)
+        self.states = accesibles
+        self.transitions = new_transitions
+
+    def _set_equivalentes(
+        self,
+    ) -> None:
+
+        #Creamos un diccionario que para cada estado devuelve sus transiciones
+        state_dic = {}
+        for tr in self.transitions:
+            if tr.initial_state not in state_dic:
+                state_dic[tr.initial_state] = [tr]
+            else:
+                state_dic[tr.initial_state].append(tr)
+
+
+        num_states = len(self.states)
+
+        #Creamos la matriz con todos los estados indistinguibles
+        matrix_dis = [ [ False for i in range(num_states) ] for j in range(num_states) ]
+        #Llenamos la matriz para la clase de equivalencia E0
+        eq_clases = {}
+        new_eq_clases = {}
+        for i in range(num_states):
+            if st.is_final:
+                matrix_dis[i] = [True] * (num_states)
+                for j in range(num_states):
+                    matrix_dis[j][i] = True
+                new_eq_clases[self.states[i]] = 0
+            else:
+                new_eq_clases[self.states[i]] = 1
+
+        it = 0
+        #TODO:Asegurar si es <= o < o que
+        while(it <= num_states - 2):
+            #Condición de parada del algoritmo
+            if(new_eq_clases == eq_clases):
+                break
+            eq_clases = new_eq_clases.copy()
+            new_eq_clases = {}
+            for i in range(num_states - 1):
+                for j in range(i + 1, num_states):
+                    #Si son distinguibles pasamos
+                    if (matrix_dis[i][j] == True):
+                        break
+                    trs_i = state_dic[self.states[i]]
+                    trs_j = state_dic[self.states[j]]
+                    dis = False
+                    for tr_i in trs_i:
+                        for tr_j in trs_j:
+                            if(tr_i.symbol == tr_j.symbol):
+                                if(eq_clases[tr_i.final_state] != eq_clases[tr_j.final_state]):
+                                    dis = True
+                                    matrix_dis[i][j] = True
+                                    break
+                        if(dis == True):
+                            break
+
+            #Creamos las nuevas clases de equivalencia
+            num_clases = 0
+            for i in range(num_states - 1):
+                if self.states[i] not in new_eq_clases:
+                    new_eq_clases[self.states[i]] = num_clases
+                    for j in range(i + 1, num_states):
+                        if(matrix_dis[i][j] = False):
+                            new_eq_clases[self.states[j]] = num_clases
+                num_clases += 1
+            it += 1
+
+        inv_eq_clases = {}
+        for k,v in new_eq_clases.items():
+            inv_eq_clases[v] = inv_eq_clases.get(v,[]) + [k]
