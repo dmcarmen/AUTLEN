@@ -111,8 +111,8 @@ class FiniteAutomaton(
             new_states_list.append(self.sumidero)
 
 
-        return FiniteAutomaton(initial_state=new_initial_state, states=new_states_list, symbols=self.symbols,
-                                transitions=new_transitions)
+        return FiniteAutomaton(initial_state=new_initial_state, states=new_states_list,
+                                symbols=self.symbols, transitions=new_transitions)
 
 
     def _joint_name(self, state_list: Collection[State]) -> str:
@@ -144,11 +144,27 @@ class FiniteAutomaton(
     def to_minimized(
         self,
     ) -> "FiniteAutomaton":
-        raise NotImplementedError("This method must be implemented.")
+        accesibles, new_transitions = self._get_accesibles()
+        self.states = accesibles
+        self.transitions = new_transitions
+        new_states, new_transitions = self._set_equivalentes()
+        aut = FiniteAutomaton(initial_state=self.initial_state, states=new_states,
+                                symbols=self.symbols, transitions=new_transitions)
+        print(aut)
+        return FiniteAutomaton(initial_state=self.initial_state, states=new_states,
+                                symbols=self.symbols, transitions=new_transitions)
 
-    def _set_accesibles(
-    self,
-    ) -> None:
+    #TODO: borrar, no need, test function
+    def to_accesibles(
+        self
+    ) -> "FiniteAutomaton":
+        accesibles, new_transitions = self._get_accesibles()
+        return FiniteAutomaton(initial_state=self.initial_state, states=accesibles,
+                                symbols=self.symbols, transitions=new_transitions)
+
+    def _get_accesibles(
+        self,
+    ): #TODO:  -> Tuple[Collection[State], Collection[Transition]]
         accesibles = [self.initial_state]
         i = 0
         while i < len(accesibles):
@@ -156,17 +172,17 @@ class FiniteAutomaton(
                 if tr.initial_state == accesibles[i]:
                     if tr.final_state not in accesibles:
                         accesibles.append(tr.final_state)
+            i+=1
         new_transitions = []
         for tr in self.transitions:
             if tr.initial_state in accesibles and tr.final_state in accesibles:
                 new_transitions.append(tr)
-        self.states = accesibles
-        self.transitions = new_transitions
+
+        return accesibles, new_transitions
 
     def _set_equivalentes(
         self,
     ) -> None:
-
         #Creamos un diccionario que para cada estado devuelve sus transiciones
         state_dic = {}
         for tr in self.transitions:
@@ -184,7 +200,7 @@ class FiniteAutomaton(
         eq_clases = {}
         new_eq_clases = {}
         for i in range(num_states):
-            if st.is_final:
+            if self.states[i].is_final:
                 matrix_dis[i] = [True] * (num_states)
                 for j in range(num_states):
                     matrix_dis[j][i] = True
@@ -229,6 +245,21 @@ class FiniteAutomaton(
                 num_clases += 1
             it += 1
 
+        # Diccionario Clase equivalencia: estados
         inv_eq_clases = {}
         for k,v in new_eq_clases.items():
             inv_eq_clases[v] = inv_eq_clases.get(v,[]) + [k]
+
+        new_states_dic = {}
+
+        for states_list in inv_eq_clases.values():
+            new_state = State(self._joint_name(states_list), is_final = states_list[0].is_final)
+            for st in states_list:
+                new_states_dic[st] = new_state
+
+        #TODO: puede que añada misma transicion twice?
+        new_transitions = set()
+        for tr in self.transitions:
+            new_transitions.add(Transition(new_states_dic[tr.initial_state], tr.symbol, new_states_dic[tr.final_state]))
+
+        return set(new_states_dic.values()), new_transitions
