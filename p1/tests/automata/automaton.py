@@ -27,6 +27,8 @@ class FiniteAutomaton(
 ):
     """Automaton."""
 
+    sumidero: State
+
     def __init__(
         self,
         *,
@@ -43,8 +45,6 @@ class FiniteAutomaton(
         )
 
         self.sumidero = None
-        # Add here additional initialization code.
-        # Do not change the constructor interface.
 
     def to_deterministic(
         self,
@@ -109,7 +109,7 @@ class FiniteAutomaton(
                                 transitions=new_transitions)
 
 
-    def _joint_name(self, state_list):
+    def _joint_name(self, state_list: Collection[State]) -> str:
         sorted_list=sorted(state_list, key=lambda st: st.name)
         joint_name = ''
         for st in sorted_list:
