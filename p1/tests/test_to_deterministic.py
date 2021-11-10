@@ -16,20 +16,22 @@ class TestTransform(ABC, unittest.TestCase):
     ) -> None:
         """Test that the transformed automaton is as the expected one."""
         transformed = automaton.to_deterministic()
-        '''
+        #'''
         print(automaton)
         print()
         print(transformed)
         print()
         print(expected)
-        '''
+        print()
+        print()
+        #'''
         equiv_map = deterministic_automata_isomorphism(
             expected,
             transformed,
         )
 
         self.assertTrue(equiv_map is not None)
-
+    #'''
     def test_case1(self) -> None:
         """Test Case 1."""
         automaton_str = """
@@ -66,9 +68,10 @@ class TestTransform(ABC, unittest.TestCase):
         expected = AutomataFormat.read(expected_str)
 
         self._check_transform(automaton, expected)
-
+    #'''
+    #'''
     def test_case2(self) -> None:
-        """Test Case 2."""
+        """Test Case 2. Ejemplo 2."""
         automaton_str = """
         Automaton:
             Symbols: 01
@@ -81,7 +84,6 @@ class TestTransform(ABC, unittest.TestCase):
             q5
             q6 final
             q7
-            empty
 
             --> q0
             q0 --> q1
@@ -104,7 +106,7 @@ class TestTransform(ABC, unittest.TestCase):
 
                 q0q1q2
                 q4
-                q3q5q6q7
+                q3q5q6q7 final
                 q3q4
                 q6 final
                 empty
@@ -127,6 +129,163 @@ class TestTransform(ABC, unittest.TestCase):
         expected = AutomataFormat.read(expected_str)
 
         self._check_transform(automaton, expected)
+    #'''
+    #'''
+    def test_case3(self) -> None:
+        """Test Case 3. Diapositivas p. 50 a 110"""
+        automaton_str = """
+        Automaton:
+            Symbols: ab
+
+            q0
+            q1
+            q2
+            q3 final
+
+            --> q0
+            q0 -a-> q0
+            q0 -b-> q0
+            q0 -a-> q1
+            q1 -b-> q2
+            q2 -a-> q3
+        """
+
+        automaton = AutomataFormat.read(automaton_str)
+
+        expected_str = """
+        Automaton:
+            Symbols: ab
+
+            q0
+            q0q1
+            q0q2
+            q0q1q3 final
+
+            --> q0
+            q0 -b-> q0
+            q0 -a-> q0q1
+            q0q1 -a-> q0q1
+            q0q1 -b-> q0q2
+            q0q2 -a-> q0q1q3
+            q0q2 -b-> q0
+            q0q1q3 -a-> q0q1
+            q0q1q3 -b-> q0q2
+        """
+
+        expected = AutomataFormat.read(expected_str)
+
+        self._check_transform(automaton, expected)
+
+    #'''
+    #'''
+    def test_case4(self) -> None:
+        """Test Case 4. Diapositivas p. 119-167."""
+        automaton_str = """
+        Automaton:
+            Symbols: abc
+
+            q0
+            q1
+            q2
+            q3
+            q4
+            q5
+            q6
+            q7
+            qf final
+
+            --> q0
+            q0 --> q1
+            q0 --> qf
+            q1 --> q2
+            q1 --> q5
+            q2 -a-> q3
+            q3 -b-> q4
+            q4 --> q7
+            q5 -c-> q6
+            q6 --> q7
+            q7 --> q1
+            q7 --> qf
+        """
+
+        automaton = AutomataFormat.read(automaton_str)
+
+        expected_str = """
+        Automaton:
+            Symbols: abc
+
+            q0q1q2q5qf final
+            q1q2q5q6q7qf final
+            q3
+            q1q2q4q5q7qf final
+            empty
+
+            --> q0q1q2q5qf
+            q0q1q2q5qf -a-> q3
+            q0q1q2q5qf -b-> empty
+            q0q1q2q5qf -c-> q1q2q5q6q7qf
+            q1q2q5q6q7qf -a-> q3
+            q1q2q5q6q7qf -b-> empty
+            q1q2q5q6q7qf -c-> q1q2q5q6q7qf
+            q3 -a-> empty
+            q3 -b-> q1q2q4q5q7qf
+            q3 -c-> empty
+            q1q2q4q5q7qf -a-> q3
+            q1q2q4q5q7qf -b-> empty
+            q1q2q4q5q7qf -c-> q1q2q5q6q7qf
+            empty -a-> empty
+            empty -b-> empty
+            empty -c-> empty
+        """
+
+        expected = AutomataFormat.read(expected_str)
+
+        self._check_transform(automaton, expected)
+
+    #'''
+    #'''
+    def test_case5(self) -> None:
+        """Test Case 5. Ejemplo 3."""
+        automaton_str = """
+        Automaton:
+            Symbols: 01
+
+            q0
+            q1
+            qf final
+
+            --> q0
+            q0 -0-> q0
+            q0 -1-> q0
+            q0 -1-> q1
+            q1 -1-> qf
+        """
+
+        automaton = AutomataFormat.read(automaton_str)
+
+        expected_str = """
+        Automaton:
+            Symbols: 01
+
+            q0
+            q0q1
+            q0q1qf final
+
+            --> q0
+            q0 -0-> q0
+            q0 -1-> q0q1
+            q0q1 -0-> q0
+            q0q1 -1-> q0q1qf
+            q0q1qf -0-> q0
+            q0q1qf -1-> q0q1qf
+
+        """
+
+        expected = AutomataFormat.read(expected_str)
+
+        self._check_transform(automaton, expected)
+    #'''
+
 
 if __name__ == '__main__':
     unittest.main()
