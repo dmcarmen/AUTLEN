@@ -147,11 +147,8 @@ class FiniteAutomaton(
         accesibles, new_transitions = self._get_accesibles()
         self.states = accesibles
         self.transitions = new_transitions
-        new_states, new_transitions = self._set_equivalentes()
-        aut = FiniteAutomaton(initial_state=self.initial_state, states=new_states,
-                                symbols=self.symbols, transitions=new_transitions)
-        print(aut)
-        return FiniteAutomaton(initial_state=self.initial_state, states=new_states,
+        initial_state, new_states, new_transitions = self._set_equivalentes()
+        return FiniteAutomaton(initial_state=initial_state, states=new_states,
                                 symbols=self.symbols, transitions=new_transitions)
 
     #TODO: borrar, no need, test function
@@ -183,6 +180,9 @@ class FiniteAutomaton(
     def _set_equivalentes(
         self,
     ) -> None:
+
+        sorted_list=sorted(self.states, key=lambda st: st.name)
+
         #Creamos un diccionario que para cada estado devuelve sus transiciones
         state_dic = {}
         for tr in self.transitions:
@@ -192,7 +192,7 @@ class FiniteAutomaton(
                 state_dic[tr.initial_state].append(tr)
 
 
-        num_states = len(self.states)
+        num_states = len(sorted_list)
 
         #Creamos la matriz con todos los estados indistinguibles
         matrix_dis = [ [ False for i in range(num_states) ] for j in range(num_states) ]
@@ -200,13 +200,13 @@ class FiniteAutomaton(
         eq_clases = {}
         new_eq_clases = {}
         for i in range(num_states):
-            if self.states[i].is_final:
+            if sorted_list[i].is_final:
                 matrix_dis[i] = [True] * (num_states)
                 for j in range(num_states):
                     matrix_dis[j][i] = True
-                new_eq_clases[self.states[i]] = 0
+                new_eq_clases[sorted_list[i]] = 0
             else:
-                new_eq_clases[self.states[i]] = 1
+                new_eq_clases[sorted_list[i]] = 1
 
         it = 0
         #TODO:Asegurar si es <= o < o que
@@ -220,9 +220,9 @@ class FiniteAutomaton(
                 for j in range(i + 1, num_states):
                     #Si son distinguibles pasamos
                     if (matrix_dis[i][j] == True):
-                        break
-                    trs_i = state_dic[self.states[i]]
-                    trs_j = state_dic[self.states[j]]
+                        continue
+                    trs_i = state_dic[sorted_list[i]]
+                    trs_j = state_dic[sorted_list[j]]
                     dis = False
                     for tr_i in trs_i:
                         for tr_j in trs_j:
@@ -237,11 +237,11 @@ class FiniteAutomaton(
             #Creamos las nuevas clases de equivalencia
             num_clases = 0
             for i in range(num_states - 1):
-                if self.states[i] not in new_eq_clases:
-                    new_eq_clases[self.states[i]] = num_clases
+                if sorted_list[i] not in new_eq_clases:
+                    new_eq_clases[sorted_list[i]] = num_clases
                     for j in range(i + 1, num_states):
                         if(matrix_dis[i][j] is False):
-                            new_eq_clases[self.states[j]] = num_clases
+                            new_eq_clases[sorted_list[j]] = num_clases
                 num_clases += 1
             it += 1
 
@@ -256,10 +256,12 @@ class FiniteAutomaton(
             new_state = State(self._joint_name(states_list), is_final = states_list[0].is_final)
             for st in states_list:
                 new_states_dic[st] = new_state
+                if st == self.initial_state:
+                    initial_state = new_state
 
         #TODO: puede que añada misma transicion twice?
         new_transitions = set()
         for tr in self.transitions:
             new_transitions.add(Transition(new_states_dic[tr.initial_state], tr.symbol, new_states_dic[tr.final_state]))
 
-        return set(new_states_dic.values()), new_transitions
+        return initial_state, set(new_states_dic.values()), new_transitions
