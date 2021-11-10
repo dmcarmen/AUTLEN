@@ -3,7 +3,7 @@ import unittest
 from abc import ABC
 
 from automata.automaton import FiniteAutomaton
-from automata.utils import AutomataFormat, deterministic_automata_isomorphism
+from automata.utils import AutomataFormat, deterministic_automata_isomorphism, write_dot
 
 
 class TestTransform(ABC, unittest.TestCase):
@@ -16,15 +16,6 @@ class TestTransform(ABC, unittest.TestCase):
     ) -> None:
         """Test that the transformed automaton is as the expected one."""
         transformed = automaton.to_deterministic()
-        #'''
-        print(automaton)
-        print()
-        print(transformed)
-        print()
-        print(expected)
-        print()
-        print()
-        #'''
         equiv_map = deterministic_automata_isomorphism(
             expected,
             transformed,
