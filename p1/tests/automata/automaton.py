@@ -82,11 +82,17 @@ class FiniteAutomaton(
                     trans_dic[symbol] = trans_dic[symbol].union(set(list_reachable))
 
                 # Guardamos el nuevo estado en la lista si no lo hemos analizado antes
-                new_state = State(self._joint_name(list(trans_dic[symbol])), is_final=is_final)
-                if new_state.name not in new_states_dic:
-                    new_states_dic[new_state.name] = list(trans_dic[symbol])
+                name = self._joint_name(list(trans_dic[symbol]))
+                if name not in new_states_dic:
+                    new_states_dic[name] = list(trans_dic[symbol])
+                    new_state = State(name, is_final=is_final)
                     new_states_list.append(new_state)
-                tr = Transition(state, symbol, new_state)
+                    tr = Transition(state, symbol, new_state)
+                else:
+                    for st in new_states_list:
+                        if st.name == name:
+                            tr = Transition(state, symbol, st)
+                            break
                 new_transitions.add(tr)
 
             # Para los símbolos sin transiciones los llevamos al sumidero
@@ -218,7 +224,7 @@ class FiniteAutomaton(
                 if self.states[i] not in new_eq_clases:
                     new_eq_clases[self.states[i]] = num_clases
                     for j in range(i + 1, num_states):
-                        if(matrix_dis[i][j] = False):
+                        if(matrix_dis[i][j] is False):
                             new_eq_clases[self.states[j]] = num_clases
                 num_clases += 1
             it += 1
