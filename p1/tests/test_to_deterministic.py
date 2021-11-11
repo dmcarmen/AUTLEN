@@ -276,7 +276,182 @@ class TestTransform(ABC, unittest.TestCase):
 
         self._check_transform(automaton, expected)
     #'''
+    #'''
+    def test_case6(self) -> None:
+        """Test Case 6. Ejemplo 1."""
+        automaton_str = """
+        Automaton:
+            Symbols: 0123456789+-.
 
+            q0
+            q1
+            q2
+            q3
+            q4
+            q5 final
+
+            --> q0
+            q0 -+-> q1
+            q0 ---> q1
+            q0 --> q1
+            q1 -0-> q1
+            q1 -1-> q1
+            q1 -2-> q1
+            q1 -3-> q1
+            q1 -4-> q1
+            q1 -5-> q1
+            q1 -6-> q1
+            q1 -7-> q1
+            q1 -8-> q1
+            q1 -9-> q1
+            q1 -0-> q4
+            q1 -1-> q4
+            q1 -2-> q4
+            q1 -3-> q4
+            q1 -4-> q4
+            q1 -5-> q4
+            q1 -6-> q4
+            q1 -7-> q4
+            q1 -8-> q4
+            q1 -9-> q4
+            q1 -.-> q2
+            q2 -0-> q3
+            q2 -1-> q3
+            q2 -2-> q3
+            q2 -3-> q3
+            q2 -4-> q3
+            q2 -5-> q3
+            q2 -6-> q3
+            q2 -7-> q3
+            q2 -8-> q3
+            q2 -9-> q3
+            q4 -.-> q3
+            q3 -0-> q3
+            q3 -1-> q3
+            q3 -2-> q3
+            q3 -3-> q3
+            q3 -4-> q3
+            q3 -5-> q3
+            q3 -6-> q3
+            q3 -7-> q3
+            q3 -8-> q3
+            q3 -9-> q3
+            q3 --> q5
+        """
+
+        automaton = AutomataFormat.read(automaton_str)
+
+        expected_str = """
+        Automaton:
+            Symbols: 0123456789+-.
+
+            q0q1
+            q1
+            q1q4
+            q2
+            q2q3q5 final
+            q3q5 final
+            empty
+
+            --> q0q1
+            q0q1 -+-> q1
+            q0q1 ---> q1
+            q0q1 -.-> q2
+            q0q1 -0-> q1q4
+            q0q1 -1-> q1q4
+            q0q1 -2-> q1q4
+            q0q1 -3-> q1q4
+            q0q1 -4-> q1q4
+            q0q1 -5-> q1q4
+            q0q1 -6-> q1q4
+            q0q1 -7-> q1q4
+            q0q1 -8-> q1q4
+            q0q1 -9-> q1q4
+            q1 -0-> q1q4
+            q1 -1-> q1q4
+            q1 -2-> q1q4
+            q1 -3-> q1q4
+            q1 -4-> q1q4
+            q1 -5-> q1q4
+            q1 -6-> q1q4
+            q1 -7-> q1q4
+            q1 -8-> q1q4
+            q1 -9-> q1q4
+            q1 -.-> q2
+            q1 -+-> empty
+            q1 ---> empty
+            q1q4 -.-> q2q3q5
+            q1q4 -0-> q1q4
+            q1q4 -1-> q1q4
+            q1q4 -2-> q1q4
+            q1q4 -3-> q1q4
+            q1q4 -4-> q1q4
+            q1q4 -5-> q1q4
+            q1q4 -6-> q1q4
+            q1q4 -7-> q1q4
+            q1q4 -8-> q1q4
+            q1q4 -9-> q1q4
+            q1q4 -+-> empty
+            q1q4 ---> empty
+            q2q3q5 -0-> q3q5
+            q2q3q5 -1-> q3q5
+            q2q3q5 -2-> q3q5
+            q2q3q5 -3-> q3q5
+            q2q3q5 -4-> q3q5
+            q2q3q5 -5-> q3q5
+            q2q3q5 -6-> q3q5
+            q2q3q5 -7-> q3q5
+            q2q3q5 -8-> q3q5
+            q2q3q5 -9-> q3q5
+            q2q3q5 -+-> empty
+            q2q3q5 ---> empty
+            q2q3q5 -.-> empty
+
+            q2 -0-> q3q5
+            q2 -1-> q3q5
+            q2 -2-> q3q5
+            q2 -3-> q3q5
+            q2 -4-> q3q5
+            q2 -5-> q3q5
+            q2 -6-> q3q5
+            q2 -7-> q3q5
+            q2 -8-> q3q5
+            q2 -9-> q3q5
+            q2 -+-> empty
+            q2 ---> empty
+            q2 -.-> empty
+            q3q5 -0-> q3q5
+            q3q5 -1-> q3q5
+            q3q5 -2-> q3q5
+            q3q5 -3-> q3q5
+            q3q5 -4-> q3q5
+            q3q5 -5-> q3q5
+            q3q5 -6-> q3q5
+            q3q5 -7-> q3q5
+            q3q5 -8-> q3q5
+            q3q5 -9-> q3q5
+            q3q5 -+-> empty
+            q3q5 ---> empty
+            q3q5 -.-> empty
+            empty -0-> empty
+            empty -1-> empty
+            empty -2-> empty
+            empty -3-> empty
+            empty -4-> empty
+            empty -5-> empty
+            empty -6-> empty
+            empty -7-> empty
+            empty -8-> empty
+            empty -9-> empty
+            empty -+-> empty
+            empty ---> empty
+            empty -.-> empty
+
+        """
+        expected = AutomataFormat.read(expected_str)
+
+        self._check_transform(automaton, expected)
+    #'''
 
 if __name__ == '__main__':
     unittest.main()

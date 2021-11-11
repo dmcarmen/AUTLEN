@@ -195,18 +195,20 @@ class FiniteAutomaton(
         num_states = len(sorted_list)
 
         #Creamos la matriz con todos los estados indistinguibles
-        matrix_dis = [ [ False for i in range(num_states) ] for j in range(num_states) ]
         #Llenamos la matriz para la clase de equivalencia E0
         eq_clases = {}
         new_eq_clases = {}
+        matrix_dis = [ [ False for i in range(num_states) ] for j in range(num_states) ]
+
         for i in range(num_states):
             if sorted_list[i].is_final:
-                matrix_dis[i] = [True] * (num_states)
-                for j in range(num_states):
-                    matrix_dis[j][i] = True
                 new_eq_clases[sorted_list[i]] = 0
             else:
                 new_eq_clases[sorted_list[i]] = 1
+
+            for j in range(i + 1, num_states):
+                if sorted_list[i].is_final != sorted_list[j].is_final:
+                    matrix_dis[i][j] = True
 
         it = 0
         #TODO:Asegurar si es <= o < o que
@@ -236,13 +238,13 @@ class FiniteAutomaton(
 
             #Creamos las nuevas clases de equivalencia
             num_clases = 0
-            for i in range(num_states - 1):
+            for i in range(num_states):
                 if sorted_list[i] not in new_eq_clases:
                     new_eq_clases[sorted_list[i]] = num_clases
                     for j in range(i + 1, num_states):
                         if(matrix_dis[i][j] is False):
                             new_eq_clases[sorted_list[j]] = num_clases
-                num_clases += 1
+                    num_clases += 1
             it += 1
 
         # Diccionario Clase equivalencia: estados
