@@ -1,6 +1,7 @@
 """Conversion from regex to automata."""
 from automata.automaton import FiniteAutomaton, State, Transition
 from automata.re_parser_interfaces import AbstractREParser
+from typing import Collection
 
 
 class REParser(AbstractREParser):
@@ -12,8 +13,8 @@ class REParser(AbstractREParser):
         initial_state = State("q0", is_final=False)
         final_state = State("qf", is_final=True)
         states = set({initial_state, final_state})
-        symbols = None
-        transitions = None
+        symbols: Collection[str] = []
+        transitions: Collection[Transition] = []
         return FiniteAutomaton(initial_state=initial_state, states=states, symbols=symbols, transitions=transitions)
 
     def _create_automaton_lambda(
@@ -21,8 +22,8 @@ class REParser(AbstractREParser):
     ) -> FiniteAutomaton:
         initial_state = State("q0", is_final=True)
         states = set({initial_state})
-        symbols = None
-        transitions = None
+        symbols: Collection[str] = []
+        transitions: Collection[Transition] = []
         return FiniteAutomaton(initial_state=initial_state, states=states, symbols=symbols, transitions=transitions)
 
     def _create_automaton_symbol(
@@ -72,8 +73,6 @@ class REParser(AbstractREParser):
             for s in (t.initial_state, t.final_state):
                 if s not in states:
                     states.add(s)
-        # states = set(a_states)
-        # states.update({initial_state, final_state})
 
         return FiniteAutomaton(initial_state=initial_state, states=states, symbols=symbols, transitions=transitions)
 
@@ -84,8 +83,6 @@ class REParser(AbstractREParser):
     ) -> FiniteAutomaton:
         initial_state = State("q0", is_final=False)
         final_state = State("qf", is_final=True)
-        a1_states = automaton1.states
-        a2_states = automaton2.states
 
         a1_states = set()
         self.state_counter = 0

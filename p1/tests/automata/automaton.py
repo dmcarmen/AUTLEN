@@ -1,5 +1,5 @@
 """Automaton implementation."""
-from typing import Collection
+from typing import Collection, Optional, Tuple, Dict
 
 from automata.interfaces import (
     AbstractFiniteAutomaton,
@@ -27,7 +27,7 @@ class FiniteAutomaton(
 ):
     """Automaton."""
 
-    sumidero: State
+    sumidero: Optional[State]
 
     def __init__(
         self,
@@ -122,7 +122,7 @@ class FiniteAutomaton(
             joint_name += st.name
         return joint_name
 
-    def _complete_lambda(self, state: State): # TODO que devuelve
+    def _complete_lambda(self, state: State) -> Tuple[Collection[State], bool]:
         # Añadimos al propio estado lambda
         list_reachable = [state]
 
@@ -145,9 +145,7 @@ class FiniteAutomaton(
         self,
     ) -> "FiniteAutomaton":
         accesibles, new_transitions = self._get_accesibles()
-        self.states = accesibles
-        self.transitions = new_transitions
-        initial_state, new_states, new_transitions = self._set_equivalentes()
+        initial_state, new_states, new_transitions = self._set_equivalentes(accesibles, new_transitions)
         return FiniteAutomaton(initial_state=initial_state, states=new_states,
                                 symbols=self.symbols, transitions=new_transitions)
 
@@ -161,7 +159,7 @@ class FiniteAutomaton(
 
     def _get_accesibles(
         self,
-    ): #TODO:  -> Tuple[Collection[State], Collection[Transition]]
+    ) -> Tuple[Collection[State], Collection[Transition]]:
         accesibles = [self.initial_state]
         i = 0
         while i < len(accesibles):
@@ -179,13 +177,15 @@ class FiniteAutomaton(
 
     def _set_equivalentes(
         self,
-    ) -> None:
+        states: Collection[State],
+        transitions: Collection[Transition]
+    ) -> Tuple[State, Collection[State], Collection[Transition]]:
 
-        sorted_list=sorted(self.states, key=lambda st: st.name)
+        sorted_list=sorted(states, key=lambda st: st.name)
 
         #Creamos un diccionario que para cada estado devuelve sus transiciones
         state_dic = {}
-        for tr in self.transitions:
+        for tr in transitions:
             if tr.initial_state not in state_dic:
                 state_dic[tr.initial_state] = [tr]
             else:
@@ -196,7 +196,6 @@ class FiniteAutomaton(
 
         #Creamos la matriz con todos los estados indistinguibles
         #Llenamos la matriz para la clase de equivalencia E0
-        eq_clases = {}
         new_eq_clases = {}
         matrix_dis = [ [ False for i in range(num_states) ] for j in range(num_states) ]
 
@@ -211,6 +210,7 @@ class FiniteAutomaton(
                     matrix_dis[i][j] = True
 
         it = 0
+        eq_clases: Optional[Dict[State, int]] = {}
         #TODO:Asegurar si es <= o < o que
         while(it <= num_states - 2):
             #Condición de parada del algoritmo
@@ -248,7 +248,7 @@ class FiniteAutomaton(
             it += 1
 
         # Diccionario Clase equivalencia: estados
-        inv_eq_clases = {}
+        inv_eq_clases = {} #TODO: : Optional[Dict[int, Collection[State]]] no va?
         for k,v in new_eq_clases.items():
             inv_eq_clases[v] = inv_eq_clases.get(v,[]) + [k]
 
@@ -263,7 +263,7 @@ class FiniteAutomaton(
 
         #TODO: puede que añada misma transicion twice?
         new_transitions = set()
-        for tr in self.transitions:
+        for tr in transitions:
             new_transitions.add(Transition(new_states_dic[tr.initial_state], tr.symbol, new_states_dic[tr.final_state]))
 
         return initial_state, set(new_states_dic.values()), new_transitions
