@@ -84,7 +84,7 @@ class TestEvaluatorFixed(TestEvaluatorBase):
 
 
 class TestEvaluatorLambdas(TestEvaluatorBase):
-    """Test for a fixed string."""
+    """Test for an automata with only lambda transitions."""
 
     def _create_automata(self) -> FiniteAutomaton:
 
@@ -106,13 +106,13 @@ class TestEvaluatorLambdas(TestEvaluatorBase):
         return AutomataFormat.read(description)
 
     def test_lambda(self) -> None:
-        """Test for a fixed string."""
+        """Test for an automata with only lambda transitions."""
         self._check_accept("", should_accept=True)
         self._check_accept("a", exception=ValueError)
 
 
 class TestEvaluatorNumber(TestEvaluatorBase):
-    """Test for a fixed string."""
+    """Test for a number string."""
 
     def _create_automata(self) -> FiniteAutomaton:
 
@@ -143,7 +143,7 @@ class TestEvaluatorNumber(TestEvaluatorBase):
         return AutomataFormat.read(description)
 
     def test_number(self) -> None:
-        """Test for a fixed string."""
+        """Test for a number string."""
         self._check_accept("0", should_accept=True)
         self._check_accept("0.0", should_accept=True)
         self._check_accept("0.1", should_accept=True)
@@ -158,6 +158,31 @@ class TestEvaluatorNumber(TestEvaluatorBase):
         self._check_accept("0.0.0", should_accept=False)
         self._check_accept("0-0.0", should_accept=False)
 
+
+class TestEvaluatorDisconnected(TestEvaluatorBase):
+    """Test for a disconnected always false automata."""
+
+    def _create_automata(self) -> FiniteAutomaton:
+
+        description = """
+        Automaton:
+            Symbols: a
+
+            q0
+            qf final
+
+            --> q0
+        """
+
+        return AutomataFormat.read(description)
+
+    def test_fixed(self) -> None:
+        """Test for a disconnected always false automata."""
+        self._check_accept("aa", should_accept=False)
+        self._check_accept("", should_accept=False)
+        self._check_accept("a", should_accept=False)
+        self._check_accept("Hella", exception=ValueError)
+        self._check_accept("Helloa", exception=ValueError)
 
 if __name__ == '__main__':
     unittest.main()
