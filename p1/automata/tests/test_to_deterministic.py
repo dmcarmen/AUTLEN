@@ -21,8 +21,109 @@ class TestTransform(ABC, unittest.TestCase):
             transformed,
         )
 
+        #'''
+        print()
+        print(automaton)
+        print(write_dot(automaton))
+        print()
+        print(transformed)
+        print(write_dot(transformed))
+        print()
+        print(expected)
+        print(write_dot(expected))
+        print()
+        print()
+        #'''
+
         self.assertTrue(equiv_map is not None)
+
+    '''
+    def test_case1(self) -> None:
+        """Test Case 1. Comprobamos que el autómata que acepta el lenguaje vacio
+        es transformado a determinista correctamente."""
+        automaton_str = """
+        Automaton:
+            Symbols:
+
+            q0
+            qf final
+
+            --> q0
+        """
+
+        automaton = AutomataFormat.read(automaton_str)
+
+        expected_str = """
+        Automaton:
+            Symbols:
+
+            q0
+            qf final
+
+            --> q0
+
+        """
+
+        expected = AutomataFormat.read(expected_str)
+
+        self._check_transform(automaton, expected)
     #'''
+
+    #'''
+    def test_case2(self) -> None:
+        """Test Case 2. Comprobamos en un caso simple que a los estados que no tienen asignado
+        una transición para cada símbolo se le aniade correctamente una que va a un sumidero."""
+        automaton_str = """
+        Automaton:
+            Symbols: ab
+
+            q0
+            q1
+            q2
+            q3
+            q4 final
+
+            --> q0
+            q0 -a-> q1
+            q1 -b-> q2
+            q2 -a-> q3
+            q3 -b-> q4
+        """
+
+        automaton = AutomataFormat.read(automaton_str)
+
+        expected_str = """
+        Automaton:
+            Symbols: ab
+
+            q0
+            q1
+            q2
+            q3
+            q4 final
+            sumidero
+
+            --> q0
+            q0 -a-> q1
+            q0 -b-> sumidero
+            q1 -b-> q2
+            q1 -a-> sumidero
+            q2 -a-> q3
+            q2 -b-> sumidero
+            q3 -b-> q4
+            q3 -a-> sumidero
+            q4 -a-> sumidero
+            q4 -b-> sumidero
+            sumidero -a-> sumidero
+            sumidero -b-> sumidero            
+        """
+
+        expected = AutomataFormat.read(expected_str)
+
+        self._check_transform(automaton, expected)
+    #'''
+
+    '''
     def test_case1(self) -> None:
         """Test Case 1."""
         automaton_str = """
@@ -60,7 +161,46 @@ class TestTransform(ABC, unittest.TestCase):
 
         self._check_transform(automaton, expected)
     #'''
+
+    '''
+    def test_case1(self) -> None:
+        """Test Case 1."""
+        automaton_str = """
+        Automaton:
+            Symbols: 01
+
+            q0
+            qf final
+
+            --> q0
+            q0 -0-> qf
+        """
+
+        automaton = AutomataFormat.read(automaton_str)
+
+        expected_str = """
+        Automaton:
+            Symbols: 01
+
+            q0
+            qf final
+            empty
+
+            --> q0
+            q0 -0-> qf
+            q0 -1-> empty
+            qf -0-> empty
+            qf -1-> empty
+            empty -0-> empty
+            empty -1-> empty
+
+        """
+
+        expected = AutomataFormat.read(expected_str)
+
+        self._check_transform(automaton, expected)
     #'''
+    '''
     def test_case2(self) -> None:
         """Test Case 2. Ejemplo 2."""
         automaton_str = """
@@ -121,7 +261,7 @@ class TestTransform(ABC, unittest.TestCase):
 
         self._check_transform(automaton, expected)
     #'''
-    #'''
+    '''
     def test_case3(self) -> None:
         """Test Case 3. Diapositivas p. 50 a 110"""
         automaton_str = """
@@ -168,7 +308,7 @@ class TestTransform(ABC, unittest.TestCase):
         self._check_transform(automaton, expected)
 
     #'''
-    #'''
+    '''
     def test_case4(self) -> None:
         """Test Case 4. Diapositivas p. 119-167."""
         automaton_str = """
@@ -234,7 +374,7 @@ class TestTransform(ABC, unittest.TestCase):
         self._check_transform(automaton, expected)
 
     #'''
-    #'''
+    '''
     def test_case5(self) -> None:
         """Test Case 5. Ejemplo 3."""
         automaton_str = """
@@ -276,7 +416,7 @@ class TestTransform(ABC, unittest.TestCase):
 
         self._check_transform(automaton, expected)
     #'''
-    #'''
+    '''
     def test_case6(self) -> None:
         """Test Case 6. Ejemplo 1."""
         automaton_str = """

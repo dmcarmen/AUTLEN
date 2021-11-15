@@ -103,7 +103,7 @@ class REParser(AbstractREParser):
             transitions.add(Transition(state, None, automaton.initial_state))
             transitions.add(Transition(state, None, final_state))
 
-        # Anadimos el resto de transiciones que ya estaban en el automata
+        # Creamos el set de estados
         states = set()
         states.add(initial_state)
         for t in transitions:
@@ -165,7 +165,7 @@ class REParser(AbstractREParser):
         for state in pre_final_states:
             transitions.add(Transition(state, None, final_state))
 
-        # Anadimos el resto de transiciones que ya estaban en el automata
+        # Creamos el set de estados
         states = set()
         states.add(initial_state)
         for t in transitions:
@@ -224,7 +224,7 @@ class REParser(AbstractREParser):
         for state in a1_final_states:
             transitions.add(Transition(state, None, automaton2.initial_state))
 
-        # Anadimos el resto de transiciones que ya estaban en el automata
+        # Creamos el set de estados
         states = set()
         states.add(initial_state)
         for t in transitions:

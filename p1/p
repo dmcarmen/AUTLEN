@@ -1,0 +1,77 @@
+
+FiniteAutomaton(initial_state=State('q0', is_final=False), states=(State('q0', is_final=False), State('q1', is_final=False), State('q2', is_final=False), State('q3', is_final=False), State('q4', is_final=True)), symbols=('a', 'b'), transitions=(Transition(State('q3', is_final=False), 'b', State('q4', is_final=True)), Transition(State('q0', is_final=False), 'a', State('q1', is_final=False)), Transition(State('q2', is_final=False), 'a', State('q3', is_final=False)), Transition(State('q1', is_final=False), 'b', State('q2', is_final=False))))
+digraph {
+  rankdir=LR;
+
+  node [shape = point]; __start_point__
+  q0[shape=circle]
+  q1[shape=circle]
+  q2[shape=circle]
+  q3[shape=circle]
+  q4[shape=doublecircle]
+
+  __start_point__ -> q0
+  q3 -> q4[label="b"]
+  q0 -> q1[label="a"]
+  q2 -> q3[label="a"]
+  q1 -> q2[label="b"]
+}
+
+
+FiniteAutomaton(initial_state=State('q0', is_final=False), states=(State('q0', is_final=False), State('q1', is_final=False), State('q2', is_final=False), State('q3', is_final=False), State('q4', is_final=True), State('empty', is_final=False)), symbols=('a', 'b'), transitions=(Transition(State('q2', is_final=False), 'a', State('q3', is_final=False)), Transition(State('q3', is_final=False), 'a', State('empty', is_final=False)), Transition(State('q4', is_final=True), 'a', State('empty', is_final=False)), Transition(State('q1', is_final=False), 'a', State('empty', is_final=False)), Transition(State('q0', is_final=False), 'a', State('q1', is_final=False)), Transition(State('q4', is_final=True), 'b', State('empty', is_final=False)), Transition(State('q1', is_final=False), 'b', State('q2', is_final=False)), Transition(State('empty', is_final=False), 'a', State('empty', is_final=False)), Transition(State('q0', is_final=False), 'b', State('empty', is_final=False)), Transition(State('empty', is_final=False), 'b', State('empty', is_final=False)), Transition(State('q3', is_final=False), 'b', State('q4', is_final=True)), Transition(State('q2', is_final=False), 'b', State('empty', is_final=False))))
+digraph {
+  rankdir=LR;
+
+  node [shape = point]; __start_point__
+  q0[shape=circle]
+  q1[shape=circle]
+  q2[shape=circle]
+  q3[shape=circle]
+  q4[shape=doublecircle]
+  empty[shape=circle]
+
+  __start_point__ -> q0
+  q2 -> q3[label="a"]
+  q3 -> empty[label="a"]
+  q4 -> empty[label="a"]
+  q1 -> empty[label="a"]
+  q0 -> q1[label="a"]
+  q4 -> empty[label="b"]
+  q1 -> q2[label="b"]
+  empty -> empty[label="a"]
+  q0 -> empty[label="b"]
+  empty -> empty[label="b"]
+  q3 -> q4[label="b"]
+  q2 -> empty[label="b"]
+}
+
+
+FiniteAutomaton(initial_state=State('q0', is_final=False), states=(State('q0', is_final=False), State('q1', is_final=False), State('q2', is_final=False), State('q3', is_final=False), State('q4', is_final=True), State('sumidero', is_final=False)), symbols=('a', 'b'), transitions=(Transition(State('q1', is_final=False), 'a', State('sumidero', is_final=False)), Transition(State('q2', is_final=False), 'a', State('q3', is_final=False)), Transition(State('q4', is_final=True), 'b', State('sumidero', is_final=False)), Transition(State('sumidero', is_final=False), 'a', State('sumidero', is_final=False)), Transition(State('q0', is_final=False), 'b', State('sumidero', is_final=False)), Transition(State('q0', is_final=False), 'a', State('q1', is_final=False)), Transition(State('q1', is_final=False), 'b', State('q2', is_final=False)), Transition(State('q2', is_final=False), 'b', State('sumidero', is_final=False)), Transition(State('q3', is_final=False), 'b', State('q4', is_final=True)), Transition(State('q3', is_final=False), 'a', State('sumidero', is_final=False)), Transition(State('q4', is_final=True), 'a', State('sumidero', is_final=False)), Transition(State('sumidero', is_final=False), 'b', State('sumidero', is_final=False))))
+digraph {
+  rankdir=LR;
+
+  node [shape = point]; __start_point__
+  q0[shape=circle]
+  q1[shape=circle]
+  q2[shape=circle]
+  q3[shape=circle]
+  q4[shape=doublecircle]
+  sumidero[shape=circle]
+
+  __start_point__ -> q0
+  q1 -> sumidero[label="a"]
+  q2 -> q3[label="a"]
+  q4 -> sumidero[label="b"]
+  sumidero -> sumidero[label="a"]
+  q0 -> sumidero[label="b"]
+  q0 -> q1[label="a"]
+  q1 -> q2[label="b"]
+  q2 -> sumidero[label="b"]
+  q3 -> q4[label="b"]
+  q3 -> sumidero[label="a"]
+  q4 -> sumidero[label="a"]
+  sumidero -> sumidero[label="b"]
+}
+
+
+

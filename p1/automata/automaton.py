@@ -181,6 +181,9 @@ class FiniteAutomaton(
         """
         accesibles, new_transitions = self._get_accesibles(self.initial_state, self.transitions)
         initial_state, new_states, new_transitions = self._get_equivalente(accesibles, new_transitions)
+        #print("Initial state: ", initial_state)
+        #print("New states: ", new_states)
+        #print("New transitions: ", new_transitions)
         return FiniteAutomaton(initial_state=initial_state, states=new_states,
                                 symbols=self.symbols, transitions=new_transitions)
 
@@ -323,8 +326,9 @@ class FiniteAutomaton(
         for list_st in inv_eq_clases.values():
             #Pues los estados de list_st son equivalentes, nos vale con ver las transiciones del primero
             st = list_st[0]
-            transitions_st = state_dic[st]
-            for tr in transitions_st:
-                new_transitions.add(Transition(new_states_dic[tr.initial_state], tr.symbol, new_states_dic[tr.final_state]))
+            if st in state_dic:
+                transitions_st = state_dic[st]
+                for tr in transitions_st:
+                    new_transitions.add(Transition(new_states_dic[tr.initial_state], tr.symbol, new_states_dic[tr.final_state]))
 
         return initial_state, new_states, new_transitions
