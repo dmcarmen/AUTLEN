@@ -40,7 +40,8 @@ class TestTransform(ABC, unittest.TestCase):
 
     #'''
     def test_case1(self) -> None:
-        """Test Case 1. Autómata solo con lambda."""
+        """Test Case 1. Comprobamos que el caso solo con lambda y sin símbolos
+        funciona correctamente."""
         automaton_str = """
         Automaton:
             Symbols:
@@ -67,77 +68,6 @@ class TestTransform(ABC, unittest.TestCase):
 
         self._check_transform(automaton, expected)
     #'''
-
-    '''
-    def test_case1(self) -> None:
-        """Test Case 1. Comprobamos que el autómata que acepta el lenguaje vacio
-        es transformado a determinista correctamente."""
-        automaton_str = """
-        Automaton:
-            Symbols:
-
-            q0
-            qf final
-
-            --> q0
-        """
-
-        automaton = AutomataFormat.read(automaton_str)
-
-        expected_str = """
-        Automaton:
-            Symbols:
-
-            q0
-            qf final
-
-            --> q0
-        """
-
-        expected = AutomataFormat.read(expected_str)
-
-        self._check_transform(automaton, expected)
-    '''
-
-    '''
-    def test_case2(self) -> None:
-        """Test Case 2. Comprobamos que el autómata con estados inalcanzables pero
-        conectados es transformado a determinista correctamente. q1 es inalcanzable."""
-        automaton_str = """
-        Automaton:
-            Symbols: a
-
-            q0
-            q1
-            qf final
-
-            --> q0
-            q0 -a-> qf
-            q1 -a-> qf
-            qf -a-> q0
-        """
-
-        automaton = AutomataFormat.read(automaton_str)
-
-        expected_str = """
-        Automaton:
-            Symbols: a
-
-            q0
-            q1
-            qf final
-
-            --> q0
-            q0 -a-> qf
-            q1 -a-> qf
-            qf -a-> q0
-        """
-
-        expected = AutomataFormat.read(expected_str)
-
-        self._check_transform(automaton, expected)
-    '''
-
 
     #'''
     def test_case2(self) -> None:
@@ -314,6 +244,59 @@ class TestTransform(ABC, unittest.TestCase):
         self._check_transform(automaton, expected)
 
     #'''
+
+    #'''
+    def test_case5(self) -> None:
+        """Test Case 5. Generamos estados interconectados exclusivamente por
+        transiciones lambda y comprobamos que se unen en un solo estado correctamente"""
+        automaton_str = """
+        Automaton:
+            Symbols:ab
+
+            q0
+            q1
+            q2
+            q3
+            q4
+            qf final
+
+            --> q0
+            q0 -a-> q1
+            q0 -b-> q0
+            q1 --> q2
+            q2 --> q3
+            q3 --> q4
+            q4 --> q1
+            q4 -a-> qf
+            q4 -b-> q0
+            qf -a-> qf
+            qf -b-> qf
+        """
+
+        automaton = AutomataFormat.read(automaton_str)
+
+        expected_str = """
+        Automaton:
+            Symbols:ab
+
+            q0
+            q1q2q3q4
+            qf final
+
+            --> q0
+            q0 -a-> q1q2q3q4
+            q0 -b-> q0
+            q1q2q3q4 -a-> qf
+            q1q2q3q4 -b-> q0
+            qf -a-> qf
+            qf -b-> qf
+        """
+
+        expected = AutomataFormat.read(expected_str)
+
+        self._check_transform(automaton, expected)
+    #'''
+
     #'''
     def test_case6(self) -> None:
         """Test Case 6. Given with the code. Basic example that cretaes empty
