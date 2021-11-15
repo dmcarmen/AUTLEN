@@ -244,9 +244,9 @@ class FiniteAutomaton(
         # Creamos la matriz con todos los estados indistinguibles (False indistinguible, True distinguible)
         matrix_dis = [ [ False for i in range(num_states) ] for j in range(num_states) ]
 
-        # Diccionario {estado: numero clase equivalencia}
+        # Diccionario {estado: numero de la clase de equivalencia}
         new_eq_clases = {}
-        # Llenamos la matriz para la clase de equivalencia E0 (finales vs no finales)
+        # Llenamos la matriz para la relación de equivalencia E0 (finales vs no finales)
         for i in range(num_states):
             if sorted_list[i].is_final:
                 new_eq_clases[sorted_list[i]] = 0
@@ -259,7 +259,6 @@ class FiniteAutomaton(
         it = 0
         # Diccionario auxiliar similar a new_eq_clases {estado: numero clase equivalencia}
         eq_clases: Optional[Dict[State, int]] = {}
-        #TODO: Asegurar si es <= o < o que, por las diapos parece <, pero <= mas sure so you choose
         while(it <= num_states - 2):
             # Condición de parada del algoritmo: si las clases de equivalencia
             # no se actualizan hemos terminado
@@ -267,7 +266,7 @@ class FiniteAutomaton(
                 break
             eq_clases = new_eq_clases.copy()
 
-            # Recorremos la 'mitad' de la matriz (es simetrica)
+            # Recorremos la 'submatriz triangular superior' de la matriz (es simetrica)
             for i in range(num_states - 1):
                 for j in range(i + 1, num_states):
                     # Si son distinguibles pasamos
@@ -280,7 +279,7 @@ class FiniteAutomaton(
                     dis = False
                     for tr_i in trs_i:
                         for tr_j in trs_j:
-                            # Si encontramos una transicion 'igual', son indistinguibles
+                            # Si encontramos una transicion 'distinta', son distinguibles
                             if tr_i.symbol == tr_j.symbol and eq_clases[tr_i.final_state] != eq_clases[tr_j.final_state]:
                                 dis = True
                                 matrix_dis[i][j] = True
@@ -316,10 +315,16 @@ class FiniteAutomaton(
                 if st == self.initial_state:
                     initial_state = new_state
 
-        #TODO: puede que añada misma transicion twice? creo que si pero no importa supongo...
+        #Creamos el set de nuevos estados
+        new_states = set(new_states_dic.values())
+
         # Anadimos las nuevas transiciones con los nuevos estados
         new_transitions = set()
-        for tr in transitions:
-            new_transitions.add(Transition(new_states_dic[tr.initial_state], tr.symbol, new_states_dic[tr.final_state]))
+        for list_st in inv_eq_clases.values():
+            #Pues los estados de list_st son equivalentes, nos vale con ver las transiciones del primero
+            st = list_st[0]
+            transitions_st = state_dic[st]
+            for tr in transitions_st:
+                new_transitions.add(Transition(new_states_dic[tr.initial_state], tr.symbol, new_states_dic[tr.final_state]))
 
-        return initial_state, set(new_states_dic.values()), new_transitions
+        return initial_state, new_states, new_transitions
