@@ -1,5 +1,5 @@
 """Automaton implementation."""
-from typing import Collection, Optional, Tuple, Dict
+from typing import Collection, Optional, Tuple, Dict, List
 
 from automata.interfaces import (
     AbstractFiniteAutomaton,
@@ -302,7 +302,7 @@ class FiniteAutomaton(
             it += 1
 
         # Diccionario inverso {clase equivalencia: lista de estados}
-        inv_eq_clases = {} #TODO: : Optional[Dict[int, Collection[State]]] no va?
+        inv_eq_clases: Dict[int, List[State]] = {}
         for st, clase in new_eq_clases.items():
             inv_eq_clases[clase] = inv_eq_clases.get(clase,[]) + [st]
 
