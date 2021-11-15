@@ -17,20 +17,6 @@ class TestTransform(ABC, unittest.TestCase):
         """Test that the transformed automaton is as the expected one."""
         transformed = automaton.to_minimized()
 
-        '''
-        print()
-        print(automaton)
-        print(write_dot(automaton))
-        print()
-        print(transformed)
-        print(write_dot(transformed))
-        print()
-        print(expected)
-        print(write_dot(expected))
-        print()
-        print()
-        '''
-
         equiv_map = deterministic_automata_isomorphism(
             expected,
             transformed,
@@ -38,10 +24,12 @@ class TestTransform(ABC, unittest.TestCase):
 
 
         self.assertTrue(equiv_map is not None)
-    #'''
+
     def test_case1(self) -> None:
         """Test Case 1. Comprobamos que el autómata que acepta el lenguaje vacio
-        lo minimiza correctamente, retirando el estado final."""
+        lo minimiza correctamente, retirando el estado final.
+
+        """
         automaton_str = """
         Automaton:
             Symbols:
@@ -65,12 +53,12 @@ class TestTransform(ABC, unittest.TestCase):
         expected = AutomataFormat.read(expected_str)
 
         self._check_transform(automaton, expected)
-    #'''
 
-    #'''
     def test_case2(self) -> None:
         """Test Case 2. Comprobamos un caso simple en el que tenemos
-         estados equivalentes. """
+         estados equivalentes.
+
+         """
 
         automaton_str = """
         Automaton:
@@ -122,9 +110,7 @@ class TestTransform(ABC, unittest.TestCase):
         expected = AutomataFormat.read(expected_str)
 
         self._check_transform(automaton, expected)
-    #'''
 
-    #'''
     def test_case3(self) -> None:
         """Test Case 3. Comprobamos un caso en el que desde
         los estados de q1 a q4 no se podrá llegar al único estado final, qf,
@@ -178,7 +164,6 @@ class TestTransform(ABC, unittest.TestCase):
         expected = AutomataFormat.read(expected_str)
 
         self._check_transform(automaton, expected)
-    #'''
 
     def test_case4(self) -> None:
         """Test Case 4. Comprobamos un caso en el que hay varios
@@ -233,12 +218,12 @@ class TestTransform(ABC, unittest.TestCase):
 
         self._check_transform(automaton, expected)
 
-
-    #'''
     def test_case5(self) -> None:
         """Test Case 5. Caso completo en el que un estado es inalcanzable y hay
         minimización de estados. Extraído de las diapositivas de ejemplo de la
-        práctica, apartado to minimize."""
+        práctica, apartado to minimize.
+
+        """
         automaton_str = """
         Automaton:
             Symbols: 01
@@ -299,11 +284,9 @@ class TestTransform(ABC, unittest.TestCase):
         expected = AutomataFormat.read(expected_str)
 
         self._check_transform(automaton, expected)
-    #'''
 
-    #'''
     def test_case6(self) -> None:
-        """Test Case 6. Casos de prueba 1:
+        """Test Case 6. Caso de prueba 1:
         AFD que reconoce cadenas con un número par de símbolos, y la cadena
         vacía. Se ha ampliado artificiosamente con estados adicionales.
         """
@@ -355,10 +338,9 @@ class TestTransform(ABC, unittest.TestCase):
         expected = AutomataFormat.read(expected_str)
 
         self._check_transform(automaton, expected)
-    #'''
-    #'''
+
     def test_case7(self) -> None:
-        """Test Case 7. Casos de prueba 2:
+        """Test Case 7. Caso de prueba 2:
         Se puede comprobar intuitivamente que los estados q1 y q3, y q2 y q4,
         son equivalentes entre sí.
         """
@@ -410,10 +392,9 @@ class TestTransform(ABC, unittest.TestCase):
         expected = AutomataFormat.read(expected_str)
 
         self._check_transform(automaton, expected)
-    #'''
-    #'''
+
     def test_case8(self) -> None:
-        """Test Case 8. Casos de prueba 3:
+        """Test Case 8. Caso de prueba 3:
         Se puede comprobar intuitivamente que los estados A y B son equivalentes.
         """
         automaton_str = """
@@ -475,7 +456,6 @@ class TestTransform(ABC, unittest.TestCase):
         expected = AutomataFormat.read(expected_str)
 
         self._check_transform(automaton, expected)
-    #'''
 
 if __name__ == '__main__':
     unittest.main()
