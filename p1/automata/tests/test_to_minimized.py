@@ -236,7 +236,9 @@ class TestTransform(ABC, unittest.TestCase):
 
     #'''
     def test_case5(self) -> None:
-        """Test Case 5. Diapositivas ejemplo, to minimize."""
+        """Test Case 5. Caso completo en el que un estado es inalcanzable y hay
+        minimización de estados. Extraído de las diapositivas de ejemplo de la
+        práctica, apartado to minimize."""
         automaton_str = """
         Automaton:
             Symbols: 01
@@ -297,11 +299,14 @@ class TestTransform(ABC, unittest.TestCase):
         expected = AutomataFormat.read(expected_str)
 
         self._check_transform(automaton, expected)
-    ##'''
+    #'''
 
     #'''
     def test_case6(self) -> None:
-        """Test Case 6. Casos de prueba 1."""
+        """Test Case 6. Casos de prueba 1:
+        AFD que reconoce cadenas con un número par de símbolos, y la cadena
+        vacía. Se ha ampliado artificiosamente con estados adicionales.
+        """
         automaton_str = """
         Automaton:
             Symbols: 01
@@ -353,7 +358,10 @@ class TestTransform(ABC, unittest.TestCase):
     #'''
     #'''
     def test_case7(self) -> None:
-        """Test Case 7. Casos de prueba 2, to minimize."""
+        """Test Case 7. Casos de prueba 2:
+        Se puede comprobar intuitivamente que los estados q1 y q3, y q2 y q4,
+        son equivalentes entre sí.
+        """
         automaton_str = """
         Automaton:
             Symbols: ab
@@ -405,7 +413,9 @@ class TestTransform(ABC, unittest.TestCase):
     #'''
     #'''
     def test_case8(self) -> None:
-        """Test Case 8. Casos de prueba 3, to minimize."""
+        """Test Case 8. Casos de prueba 3:
+        Se puede comprobar intuitivamente que los estados A y B son equivalentes.
+        """
         automaton_str = """
         Automaton:
             Symbols: abc

@@ -37,6 +37,37 @@ class TestTransform(ABC, unittest.TestCase):
 
         self.assertTrue(equiv_map is not None)
 
+
+    #'''
+    def test_case1(self) -> None:
+        """Test Case 1. Autómata solo con lambda."""
+        automaton_str = """
+        Automaton:
+            Symbols:
+
+            q0
+            qf final
+
+            --> q0
+            q0 --> qf
+        """
+
+        automaton = AutomataFormat.read(automaton_str)
+
+        expected_str = """
+        Automaton:
+            Symbols:
+
+            qf final
+
+            --> qf
+        """
+
+        expected = AutomataFormat.read(expected_str)
+
+        self._check_transform(automaton, expected)
+    #'''
+
     '''
     def test_case1(self) -> None:
         """Test Case 1. Comprobamos que el autómata que acepta el lenguaje vacio
@@ -61,18 +92,58 @@ class TestTransform(ABC, unittest.TestCase):
             qf final
 
             --> q0
-
         """
 
         expected = AutomataFormat.read(expected_str)
 
         self._check_transform(automaton, expected)
-    #'''
+    '''
+
+    '''
+    def test_case2(self) -> None:
+        """Test Case 2. Comprobamos que el autómata con estados inalcanzables pero
+        conectados es transformado a determinista correctamente. q1 es inalcanzable."""
+        automaton_str = """
+        Automaton:
+            Symbols: a
+
+            q0
+            q1
+            qf final
+
+            --> q0
+            q0 -a-> qf
+            q1 -a-> qf
+            qf -a-> q0
+        """
+
+        automaton = AutomataFormat.read(automaton_str)
+
+        expected_str = """
+        Automaton:
+            Symbols: a
+
+            q0
+            q1
+            qf final
+
+            --> q0
+            q0 -a-> qf
+            q1 -a-> qf
+            qf -a-> q0
+        """
+
+        expected = AutomataFormat.read(expected_str)
+
+        self._check_transform(automaton, expected)
+    '''
+
 
     #'''
     def test_case2(self) -> None:
-        """Test Case 2. Comprobamos en un caso simple que a los estados que no tienen asignado
-        una transición para cada símbolo se le aniade correctamente una que va a un sumidero."""
+        """Test Case 2. Comprobamos en un caso simple que a los estados que
+        no tienen asignada una transición para cada símbolo se le aniade
+        correctamente una que va a un sumidero."""
         automaton_str = """
         Automaton:
             Symbols: ab
@@ -115,7 +186,7 @@ class TestTransform(ABC, unittest.TestCase):
             q4 -a-> sumidero
             q4 -b-> sumidero
             sumidero -a-> sumidero
-            sumidero -b-> sumidero            
+            sumidero -b-> sumidero
         """
 
         expected = AutomataFormat.read(expected_str)
@@ -123,147 +194,11 @@ class TestTransform(ABC, unittest.TestCase):
         self._check_transform(automaton, expected)
     #'''
 
-    '''
-    def test_case1(self) -> None:
-        """Test Case 1."""
-        automaton_str = """
-        Automaton:
-            Symbols: 01
-
-            q0
-            qf final
-
-            --> q0
-            q0 -0-> qf
-        """
-
-        automaton = AutomataFormat.read(automaton_str)
-
-        expected_str = """
-        Automaton:
-            Symbols: 01
-
-            q0
-            qf final
-            empty
-
-            --> q0
-            q0 -0-> qf
-            q0 -1-> empty
-            qf -0-> empty
-            qf -1-> empty
-            empty -0-> empty
-            empty -1-> empty
-
-        """
-
-        expected = AutomataFormat.read(expected_str)
-
-        self._check_transform(automaton, expected)
     #'''
-
-    '''
-    def test_case1(self) -> None:
-        """Test Case 1."""
-        automaton_str = """
-        Automaton:
-            Symbols: 01
-
-            q0
-            qf final
-
-            --> q0
-            q0 -0-> qf
-        """
-
-        automaton = AutomataFormat.read(automaton_str)
-
-        expected_str = """
-        Automaton:
-            Symbols: 01
-
-            q0
-            qf final
-            empty
-
-            --> q0
-            q0 -0-> qf
-            q0 -1-> empty
-            qf -0-> empty
-            qf -1-> empty
-            empty -0-> empty
-            empty -1-> empty
-
-        """
-
-        expected = AutomataFormat.read(expected_str)
-
-        self._check_transform(automaton, expected)
-    #'''
-    '''
-    def test_case2(self) -> None:
-        """Test Case 2. Ejemplo 2."""
-        automaton_str = """
-        Automaton:
-            Symbols: 01
-
-            q0
-            q1
-            q2
-            q3
-            q4
-            q5
-            q6 final
-            q7
-
-            --> q0
-            q0 --> q1
-            q0 --> q2
-            q1 -1-> q3
-            q1 -1-> q5
-            q2 -0-> q4
-            q4 -1-> q6
-            q5 --> q7
-            q5 -0-> q4
-            q5 -0-> q3
-            q7 --> q6
-        """
-
-        automaton = AutomataFormat.read(automaton_str)
-
-        expected_str = """
-        Automaton:
-                Symbols: 01
-
-                q0q1q2
-                q4
-                q3q5q6q7 final
-                q3q4
-                q6 final
-                empty
-
-                --> q0q1q2
-                q0q1q2 -0-> q4
-                q0q1q2 -1-> q3q5q6q7
-                q4 -0-> empty
-                q4 -1-> q6
-                q3q5q6q7 -0-> q3q4
-                q3q5q6q7 -1-> empty
-                q3q4 -0-> empty
-                q3q4 -1-> q6
-                q6 -0-> empty
-                q6 -1-> empty
-                empty -0-> empty
-                empty -1-> empty
-        """
-
-        expected = AutomataFormat.read(expected_str)
-
-        self._check_transform(automaton, expected)
-    #'''
-    '''
     def test_case3(self) -> None:
-        """Test Case 3. Diapositivas p. 50 a 110"""
+        """Test Case 3. Ejemplo genérico (sin transiciones lambda sólo AFN -> AFD)
+        para probar que se añaden estados nuevos y las transiciones
+        correspondientes. Extraído de los apuntes de clase, diapositivas p. 50 a 110"""
         automaton_str = """
         Automaton:
             Symbols: ab
@@ -308,9 +243,14 @@ class TestTransform(ABC, unittest.TestCase):
         self._check_transform(automaton, expected)
 
     #'''
-    '''
+
+    #'''
     def test_case4(self) -> None:
-        """Test Case 4. Diapositivas p. 119-167."""
+        """Test Case 4. Ejemplo completo (con transiciones lambda AFN-lambda -> AFD)
+        para probar que se añaden estados nuevos, las transiciones correspondientes
+        y se calculan correctamente las clausuras.
+        Extraído de los apuntes de clase, diapositivas p. 119 a 167"""
+
         automaton_str = """
         Automaton:
             Symbols: abc
@@ -374,22 +314,19 @@ class TestTransform(ABC, unittest.TestCase):
         self._check_transform(automaton, expected)
 
     #'''
-    '''
-    def test_case5(self) -> None:
-        """Test Case 5. Ejemplo 3."""
+    #'''
+    def test_case6(self) -> None:
+        """Test Case 6. Given with the code. Basic example that cretaes empty
+        state and creates transitions to that state."""
         automaton_str = """
         Automaton:
             Symbols: 01
 
             q0
-            q1
             qf final
 
             --> q0
-            q0 -0-> q0
-            q0 -1-> q0
-            q0 -1-> q1
-            q1 -1-> qf
+            q0 -0-> qf
         """
 
         automaton = AutomataFormat.read(automaton_str)
@@ -399,16 +336,16 @@ class TestTransform(ABC, unittest.TestCase):
             Symbols: 01
 
             q0
-            q0q1
-            q0q1qf final
+            qf final
+            empty
 
             --> q0
-            q0 -0-> q0
-            q0 -1-> q0q1
-            q0q1 -0-> q0
-            q0q1 -1-> q0q1qf
-            q0q1qf -0-> q0
-            q0q1qf -1-> q0q1qf
+            q0 -0-> qf
+            q0 -1-> empty
+            qf -0-> empty
+            qf -1-> empty
+            empty -0-> empty
+            empty -1-> empty
 
         """
 
@@ -416,9 +353,10 @@ class TestTransform(ABC, unittest.TestCase):
 
         self._check_transform(automaton, expected)
     #'''
-    '''
-    def test_case6(self) -> None:
-        """Test Case 6. Ejemplo 1."""
+    #'''
+    def test_case7(self) -> None:
+        """Test Case 7. Ejemplo 1:
+        AF que reconoce un número decimal con signo opcional."""
         automaton_str = """
         Automaton:
             Symbols: 0123456789+-.
@@ -588,6 +526,115 @@ class TestTransform(ABC, unittest.TestCase):
             empty -.-> empty
 
         """
+        expected = AutomataFormat.read(expected_str)
+
+        self._check_transform(automaton, expected)
+    #'''
+    #'''
+    def test_case8(self) -> None:
+        """Test Case 7. Ejemplo 2:
+        AF que reconoce las cadenas
+        “1”, “01”, y “101”, artificiosamente ampliado con transiciones lambda.
+        """
+        automaton_str = """
+        Automaton:
+            Symbols: 01
+
+            q0
+            q1
+            q2
+            q3
+            q4
+            q5
+            q6 final
+            q7
+
+            --> q0
+            q0 --> q1
+            q0 --> q2
+            q1 -1-> q3
+            q1 -1-> q5
+            q2 -0-> q4
+            q4 -1-> q6
+            q5 --> q7
+            q5 -0-> q4
+            q5 -0-> q3
+            q7 --> q6
+        """
+
+        automaton = AutomataFormat.read(automaton_str)
+
+        expected_str = """
+        Automaton:
+                Symbols: 01
+
+                q0q1q2
+                q4
+                q3q5q6q7 final
+                q3q4
+                q6 final
+                empty
+
+                --> q0q1q2
+                q0q1q2 -0-> q4
+                q0q1q2 -1-> q3q5q6q7
+                q4 -0-> empty
+                q4 -1-> q6
+                q3q5q6q7 -0-> q3q4
+                q3q5q6q7 -1-> empty
+                q3q4 -0-> empty
+                q3q4 -1-> q6
+                q6 -0-> empty
+                q6 -1-> empty
+                empty -0-> empty
+                empty -1-> empty
+        """
+
+        expected = AutomataFormat.read(expected_str)
+
+        self._check_transform(automaton, expected)
+    #'''
+    #'''
+    def test_case9(self) -> None:
+        """Test Case 9. Ejemplo 3:
+        AF que reconoce las cadenas acabadas en “11”. El AFD resultante mantiene
+        el número de estados.
+        """
+        automaton_str = """
+        Automaton:
+            Symbols: 01
+
+            q0
+            q1
+            qf final
+
+            --> q0
+            q0 -0-> q0
+            q0 -1-> q0
+            q0 -1-> q1
+            q1 -1-> qf
+        """
+
+        automaton = AutomataFormat.read(automaton_str)
+
+        expected_str = """
+        Automaton:
+            Symbols: 01
+
+            q0
+            q0q1
+            q0q1qf final
+
+            --> q0
+            q0 -0-> q0
+            q0 -1-> q0q1
+            q0q1 -0-> q0
+            q0q1 -1-> q0q1qf
+            q0q1qf -0-> q0
+            q0q1qf -1-> q0q1qf
+
+        """
+
         expected = AutomataFormat.read(expected_str)
 
         self._check_transform(automaton, expected)
