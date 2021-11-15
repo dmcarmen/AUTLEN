@@ -21,24 +21,9 @@ class TestTransform(ABC, unittest.TestCase):
             transformed,
         )
 
-        #'''
-        print()
-        print(automaton)
-        print(write_dot(automaton))
-        print()
-        print(transformed)
-        print(write_dot(transformed))
-        print()
-        print(expected)
-        print(write_dot(expected))
-        print()
-        print()
-        #'''
-
         self.assertTrue(equiv_map is not None)
 
 
-    #'''
     def test_case1(self) -> None:
         """Test Case 1. Comprobamos que el caso solo con lambda y sin símbolos
         funciona correctamente."""
@@ -67,9 +52,7 @@ class TestTransform(ABC, unittest.TestCase):
         expected = AutomataFormat.read(expected_str)
 
         self._check_transform(automaton, expected)
-    #'''
 
-    #'''
     def test_case2(self) -> None:
         """Test Case 2. Comprobamos en un caso simple que a los estados que
         no tienen asignada una transición para cada símbolo se le aniade
@@ -122,9 +105,7 @@ class TestTransform(ABC, unittest.TestCase):
         expected = AutomataFormat.read(expected_str)
 
         self._check_transform(automaton, expected)
-    #'''
 
-    #'''
     def test_case3(self) -> None:
         """Test Case 3. Ejemplo genérico (sin transiciones lambda sólo AFN -> AFD)
         para probar que se añaden estados nuevos y las transiciones
@@ -172,9 +153,6 @@ class TestTransform(ABC, unittest.TestCase):
 
         self._check_transform(automaton, expected)
 
-    #'''
-
-    #'''
     def test_case4(self) -> None:
         """Test Case 4. Ejemplo completo (con transiciones lambda AFN-lambda -> AFD)
         para probar que se añaden estados nuevos, las transiciones correspondientes
@@ -243,12 +221,11 @@ class TestTransform(ABC, unittest.TestCase):
 
         self._check_transform(automaton, expected)
 
-    #'''
-
-    #'''
     def test_case5(self) -> None:
         """Test Case 5. Generamos estados interconectados exclusivamente por
-        transiciones lambda y comprobamos que se unen en un solo estado correctamente"""
+        transiciones lambda y comprobamos que se unen en un solo estado correctamente.
+
+        """
         automaton_str = """
         Automaton:
             Symbols:ab
@@ -295,12 +272,13 @@ class TestTransform(ABC, unittest.TestCase):
         expected = AutomataFormat.read(expected_str)
 
         self._check_transform(automaton, expected)
-    #'''
 
-    #'''
     def test_case6(self) -> None:
         """Test Case 6. Given with the code. Basic example that cretaes empty
-        state and creates transitions to that state."""
+        state and creates transitions to that state.
+
+        """
+
         automaton_str = """
         Automaton:
             Symbols: 01
@@ -335,8 +313,7 @@ class TestTransform(ABC, unittest.TestCase):
         expected = AutomataFormat.read(expected_str)
 
         self._check_transform(automaton, expected)
-    #'''
-    #'''
+
     def test_case7(self) -> None:
         """Test Case 7. Ejemplo 1:
         AF que reconoce un número decimal con signo opcional."""
@@ -512,8 +489,8 @@ class TestTransform(ABC, unittest.TestCase):
         expected = AutomataFormat.read(expected_str)
 
         self._check_transform(automaton, expected)
-    #'''
-    #'''
+
+
     def test_case8(self) -> None:
         """Test Case 7. Ejemplo 2:
         AF que reconoce las cadenas
@@ -576,8 +553,7 @@ class TestTransform(ABC, unittest.TestCase):
         expected = AutomataFormat.read(expected_str)
 
         self._check_transform(automaton, expected)
-    #'''
-    #'''
+
     def test_case9(self) -> None:
         """Test Case 9. Ejemplo 3:
         AF que reconoce las cadenas acabadas en “11”. El AFD resultante mantiene
@@ -621,7 +597,6 @@ class TestTransform(ABC, unittest.TestCase):
         expected = AutomataFormat.read(expected_str)
 
         self._check_transform(automaton, expected)
-    #'''
 
 if __name__ == '__main__':
     unittest.main()
