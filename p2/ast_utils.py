@@ -30,30 +30,35 @@ class ASTDotVisitor(ast.NodeVisitor):
         if self.n_node == 0:
             print('digraph {')
 
-        #self.last_parent = self.n_node
-
-        print(f's{self.n_node}:[label="{type(node)}"]')
-
+        n = f's{self.n_node}:[label="{type(node).__name__}('
+        
         if self.last_parent != None:
-            print(f's{self.last_parent} -> s{self.n_node}[label={field}]')
+            print(f's{self.last_parent} -> s{self.n_node}[label={self.last_field_name}]')
 
+        self.last_parent = self.n_node
         self.n_node += 1
-        print(type(node))
+        self.level += 1
+        n_args = ''
+        
         for field, value in ast.iter_fields(node): # Itera por los hijos
-
-            print(field, ' ,..., ', value, ' ,..., ', type(value))
-            print('\n\n')
-
+            self.last_field_name = field #str(field)?
             if isinstance(value, list):
                 for item in value:
                     if isinstance(item, ast.AST):
                         self.visit(item)
             elif isinstance(value, ast.AST):
-                self.level += 1
-                print('level: ', self.level)
-
                 self.visit(value)
-
+            else:
+                n_args += f'{field}={value}, ' #!r?
+        
+        self.level -= 1
+        if len(n_args) > 0:
+            n_args = n_args[:-2]
+        print(n + n_args + ')"]')
+        if self.level == 0:
+            print("}")
+        
+            
 # usar un esquema similar al generic_visit de la clase padre para recorrer los hijos del nodo actual
 # obtener los nodos hijos (nodos AST y listas de nodos AST) del nodo actual
 # obtener los campos hijos (el resto) del nodo actual
