@@ -1,5 +1,7 @@
 import numbers
 import ast
+import inspect
+import types
 
 class ASTMagicNumberDetector(ast.NodeVisitor):
     def __init__(self):
@@ -30,7 +32,7 @@ class ASTDotVisitor(ast.NodeVisitor):
         if self.n_node == 0:
             print('digraph {')
 
-        n = f's{self.n_node}: [label="{type(node).__name__}('
+        n = f's{self.n_node}[label="{type(node).__name__}('
 
         if self.last_parent != None:
             print(f's{self.last_parent} -> s{self.n_node}[label="{self.last_field_name}"]')
@@ -41,7 +43,7 @@ class ASTDotVisitor(ast.NodeVisitor):
         n_args = ''
 
         for field, value in ast.iter_fields(node): # Itera por los hijos
-            self.last_field_name = field #str(field)?
+            self.last_field_name = field
             if isinstance(value, list):
                 for item in value:
                     if isinstance(item, ast.AST):
@@ -49,18 +51,48 @@ class ASTDotVisitor(ast.NodeVisitor):
             elif isinstance(value, ast.AST):
                 self.visit(value)
             else:
-                n_args += f'{field}={value}, ' #!r?
+                if len(n_args) == 0:
+                    n_args = f'{field}={value}'
+                else:
+                    n_args += f', {field}={value}'
 
-        self.level -= 1
-        if len(n_args) > 0:
-            n_args = n_args[:-2]
         print(n + n_args + ')"]')
+
+        self.level -= 1   
         if self.level == 0:
             print("}")
 
 
-# usar un esquema similar al generic_visit de la clase padre para recorrer los hijos del nodo actual
-# obtener los nodos hijos (nodos AST y listas de nodos AST) del nodo actual
-# obtener los campos hijos (el resto) del nodo actual
-# procesar todos los campos hijos obtenidos del nodo actual (imprimir sus valores)
-# procesar todos los nodos hijos obtenidos del nodo actual (llamada a visit)
+def transform_code(f, transformer):
+    f_ast = ast.parse(inspect.getsource(f))
+
+    new_tree = ast.fix_missing_locations(transformer.visit(f_ast))
+
+    old_code = f.__code__
+    code = compile(new_tree, old_code.co_filename, 'exec')
+    new_f = types.FunctionType(code.co_consts[0], f.__globals__)
+
+    return new_f
+
+class ASTReplaceNum(ast.NodeTransformer):
+    def __init__(self , number: complex):
+        self.number = number
+    
+    def visit_Num(self, node: ast.Num) -> ast.AST :
+    # devolver un nuevo nodo AST con self.number
+        return ast.Num(self.number)
+    
+    # Para Python >= 3.8
+    def visit_Constant(self, node: ast.Constant) -> ast.AST :
+    # devolver un nuevo nodo AST con self.number si la constante es un número
+        if isinstance(node.value, numbers.Number):
+            return ast.Constant(self.number)
+        else:
+            return node
+
+# Clase a completar
+class ASTRemoveConstantIf(ast.NodeTransformer):
+    def visit_If(self, node: ast.If) -> Union[ast.AST, List[ast.stmt]]:
+        # usar node.test, node.test.value, node.body y node.orelse
+        
+        return None

@@ -1,7 +1,7 @@
 # Ejemplos ejercicio 1
 import ast
 import inspect
-from ast_utils import ASTMagicNumberDetector, ASTDotVisitor
+from ast_utils import ASTMagicNumberDetector, ASTDotVisitor, ASTReplaceNum, transform_code, ASTRemoveConstantIf
 
 '''
 # Ejemplo apartado (a)
@@ -75,3 +75,34 @@ dot_visitor.visit(my_ast)
     s14 -> s18[label="right"]
     }
 '''
+
+# Ejemplo apartado (c)
+def my_fun(p):
+    if p == 1:
+        print(p + 1j)
+    elif p == 5:
+        print(0)
+    else:
+        print(p - 27.3 * 3j)
+
+num_replacer = ASTReplaceNum(3)
+new_fun = transform_code(my_fun, num_replacer)
+
+new_fun(1)
+# Debería imprimir -8
+
+new_fun(3)
+# Debería imprimir 6
+
+# Ejemplo apartado (d)
+def my_fun(p):
+    if True:
+        return 1
+    else:
+        return 0
+
+source = inspect.getsource(my_fun)
+my_ast = ast.parse(source)
+
+if_remover = ASTRemoveConstantIf()
+new_ast = if_remover.visit(my_ast)

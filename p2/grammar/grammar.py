@@ -271,8 +271,30 @@ class LL1Table:
             SyntaxError: if the input string is not syntactically correct.
         """
         
-	# TO-DO: Complete this method for exercise 2...
+	    # TO-DO: Complete this method for exercise 2...
 
+        pila = ['$', start]
+        next = 0
+
+        #root = ParseTree(root = start)
+
+        while pila.empty() is False:
+            elem = pila.pop()
+            if elem in self.non_terminals:
+                if elem == input_string[next]:
+                    next += 1
+                else:
+                    return SyntaxError
+            elif elem in self.non_terminals:
+                if (elem, input_string[next]) in self.cells:
+                    right = self.cells[(elem, input_string[next])]
+                    right = list(right)
+                    right.reverse()
+                    pila += right
+                else:
+                    return SyntaxError
+            else:
+                return SyntaxError
         return ParseTree("") # Return an empty tree by default.
     
 class ParseTree():
