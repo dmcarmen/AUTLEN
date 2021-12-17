@@ -130,7 +130,7 @@ class Grammar:
         """
 
 	# TO-DO: Complete this method for exercise 4...
-	
+
 
     def get_ll1_table(self) -> Optional[LL1Table]:
         """
@@ -270,21 +270,29 @@ class LL1Table:
         Raises:
             SyntaxError: if the input string is not syntactically correct.
         """
-        
-	    # TO-DO: Complete this method for exercise 2...
 
+        # Iniciamos la pila con el simbolo de fin de cadena y el simbolo de entrada
         pila = ['$', start]
         next = 0
 
         #root = ParseTree(root = start)
 
-        while pila.empty() is False:
+        # Mientras la pila tenga elementos (y la string) analizamos
+        while len(pila) > 0 and next > len(input_string) - 1:
+            # Cogemos el ultimo elemento de la pila.
             elem = pila.pop()
-            if elem in self.non_terminals:
+
+            # Si es terminal, comprobamos la cadena y pasamos al siguiente
+            # caracter si son iguales. Si no, SyntaxError.
+            if elem in self.terminals:
                 if elem == input_string[next]:
                     next += 1
                 else:
-                    return SyntaxError
+                    raise SyntaxError
+
+            # Si es no terminal, comprobamos las celdas de la tabla LL1
+            # y sustituimos por la expresion derecha si exsite.
+            # Si no, SyntaxError.
             elif elem in self.non_terminals:
                 if (elem, input_string[next]) in self.cells:
                     right = self.cells[(elem, input_string[next])]
@@ -292,11 +300,18 @@ class LL1Table:
                     right.reverse()
                     pila += right
                 else:
-                    return SyntaxError
+                    raise SyntaxError
+            # Si no esta en la lista de simbolos, SyntaxError.
             else:
-                return SyntaxError
+                raise SyntaxError
+
+        # Si la pila o la cadena tienen elementos por analizar, SyntaxError.
+        if next < len(input_string) or len(pila) > 0:
+            raise SyntaxError
+
         return ParseTree("") # Return an empty tree by default.
-    
+
+
 class ParseTree():
     """
     Parse Tree.
