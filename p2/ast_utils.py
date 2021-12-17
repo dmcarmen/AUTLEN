@@ -2,6 +2,7 @@ import numbers
 import ast
 import inspect
 import types
+from typing import List, Union, Optional
 
 class ASTMagicNumberDetector(ast.NodeVisitor):
     def __init__(self):
@@ -11,6 +12,7 @@ class ASTMagicNumberDetector(ast.NodeVisitor):
         if isinstance(number, numbers.Number) and number != 0 and number != 1 and number != (1j):
             return True
 
+    # Para Python < 3.8
     def visit_Num(self, node: ast.Num) -> None:
         if self._check_magic_number(node.n):
             self.magic_numbers += 1
@@ -23,33 +25,29 @@ class ASTMagicNumberDetector(ast.NodeVisitor):
 
 class ASTDotVisitor(ast.NodeVisitor):
     def __init__(self) -> None:
-        self.level = 0
         self.n_node = 0
-        self.last_parent: Optional[int] = None
-        self.last_field_name = ""
 
-    def generic_visit(self, node: ast.AST) -> None:
+    def visit(self, node: ast.AST, parent = None, field_name = "", level = 0) -> None:
+        this_node = self.n_node
         if self.n_node == 0:
             print('digraph {')
-
-        n = f's{self.n_node}[label="{type(node).__name__}('
-
-        if self.last_parent != None:
-            print(f's{self.last_parent} -> s{self.n_node}[label="{self.last_field_name}"]')
-
-        self.last_parent = self.n_node
         self.n_node += 1
-        self.level += 1
+
+        n = f's{this_node}[label="{type(node).__name__}('
+
+        if parent != None:
+            print(f's{parent} -> s{this_node}[label="{field_name}"]')
+
         n_args = ''
 
         for field, value in ast.iter_fields(node): # Itera por los hijos
-            self.last_field_name = field
+            field_name = field
             if isinstance(value, list):
                 for item in value:
                     if isinstance(item, ast.AST):
-                        self.visit(item)
+                        self.visit(item, this_node, field_name, level + 1)
             elif isinstance(value, ast.AST):
-                self.visit(value)
+                self.visit(value, this_node, field_name, level + 1)
             else:
                 if len(n_args) == 0:
                     n_args = f'{field}={value}'
@@ -58,8 +56,8 @@ class ASTDotVisitor(ast.NodeVisitor):
 
         print(n + n_args + ')"]')
 
-        self.level -= 1   
-        if self.level == 0:
+        level -= 1   
+        if level == -1:
             print("}")
 
 
@@ -78,6 +76,7 @@ class ASTReplaceNum(ast.NodeTransformer):
     def __init__(self , number: complex):
         self.number = number
     
+    # Para Python < 3.8
     def visit_Num(self, node: ast.Num) -> ast.AST :
     # devolver un nuevo nodo AST con self.number
         return ast.Num(self.number)
@@ -90,9 +89,12 @@ class ASTReplaceNum(ast.NodeTransformer):
         else:
             return node
 
-# Clase a completar
 class ASTRemoveConstantIf(ast.NodeTransformer):
     def visit_If(self, node: ast.If) -> Union[ast.AST, List[ast.stmt]]:
         # usar node.test, node.test.value, node.body y node.orelse
-        
+        if(isinstance(node.test, ast.Constant)):
+            if(str(node.test.value) == "True"):
+                return node.body
+            elif(node.test.value == "False"):
+                return node.orelse
         return None

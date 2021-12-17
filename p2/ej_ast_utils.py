@@ -3,9 +3,8 @@ import ast
 import inspect
 from ast_utils import ASTMagicNumberDetector, ASTDotVisitor, ASTReplaceNum, transform_code, ASTRemoveConstantIf
 
-'''
 # Ejemplo apartado (a)
-def my_fun(p):
+def my_fun_a(p):
     if p == 1:
         print(p + 1j)
     elif p == 5:
@@ -13,26 +12,28 @@ def my_fun(p):
     else:
         print(p - 27.3 * 3j)
 
-source = inspect.getsource(my_fun)
-my_ast = ast.parse(source)
+def test_a():
+    source = inspect.getsource(my_fun_a)
+    my_ast = ast.parse(source)
 
-magic_detector = ASTMagicNumberDetector()
-magic_detector.visit(my_ast)
-print(magic_detector.magic_numbers)
-# Debería dar 3
-'''
+    magic_detector = ASTMagicNumberDetector()
+    magic_detector.visit(my_ast)
+
+    # Debería dar 3
+    print(magic_detector.magic_numbers)
 
 # Ejemplo apartado (b)
 def print_next_if_pos(num):
     if num > 0:
         print(num + 1)
 
-source = inspect.getsource(print_next_if_pos)
-my_ast = ast.parse(source)
+def test_b():
+    source = inspect.getsource(print_next_if_pos)
+    my_ast = ast.parse(source)
 
-dot_visitor = ASTDotVisitor()
-dot_visitor.visit(my_ast)
-# Debería generar este texto dot
+    dot_visitor = ASTDotVisitor()
+    dot_visitor.visit(my_ast)
+    # Debería generar este texto dot
 
 '''
     digraph {
@@ -77,7 +78,7 @@ dot_visitor.visit(my_ast)
 '''
 
 # Ejemplo apartado (c)
-def my_fun(p):
+def my_fun_c(p):
     if p == 1:
         print(p + 1j)
     elif p == 5:
@@ -85,24 +86,31 @@ def my_fun(p):
     else:
         print(p - 27.3 * 3j)
 
-num_replacer = ASTReplaceNum(3)
-new_fun = transform_code(my_fun, num_replacer)
+def test_c():
+    num_replacer = ASTReplaceNum(3)
+    new_fun = transform_code(my_fun_c, num_replacer)
 
-new_fun(1)
-# Debería imprimir -8
+    new_fun(1)
+    # Debería imprimir -8
 
-new_fun(3)
+    new_fun(3)
 # Debería imprimir 6
 
 # Ejemplo apartado (d)
-def my_fun(p):
+def my_fun_d(p):
     if True:
         return 1
     else:
         return 0
 
-source = inspect.getsource(my_fun)
-my_ast = ast.parse(source)
-
-if_remover = ASTRemoveConstantIf()
-new_ast = if_remover.visit(my_ast)
+def test_d():
+    source = inspect.getsource(my_fun_d)
+    my_ast = ast.parse(source)
+    #dot_visitor = ASTDotVisitor()
+    #dot_visitor.visit(my_ast)
+    if_remover = ASTRemoveConstantIf()
+    new_ast = if_remover.visit(my_ast)
+    #dot_visitor = ASTDotVisitor()
+    #dot_visitor.visit(new_ast)
+    
+test_b()
