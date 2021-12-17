@@ -115,7 +115,48 @@ class Grammar:
             First set of str.
         """
 
-	# TO-DO: Complete this method for exercise 3...
+        # Si la produccion es lambda, devolvemos lambda
+        if sentence == '':
+            return {''}
+
+        primero = set()
+        lambda_flag = False
+
+        for ch in sentence:
+
+            # Si ya hemmos añadido elementos al set de primeros y
+            #   el primero del ultimo simbolo no terminal no tenia lambda
+            # o el siguiente caracter es terminal.
+            if len(primero) > 0:
+                if lambda_flag is False:
+                    return primero - {''}
+                elif ch in self.terminals:
+                    return primero.union({ch}) - {''}
+
+            # Si es un caracter lo devolvemos.
+            if ch in self.terminals:
+                return set(ch)
+
+            # Si es terminal recorremos sus producciones.
+            elif ch in self.non_terminals:
+                lambda_flag = False
+                for pr in self.productions:
+                    if pr.left == ch:
+                        #TODO: tengo miedo de que entre en bucle... if pr.left != pr.right[0]? comprobando None.
+                        # Calculamos el primero de cada produccion y lo añadimos.
+                        # Guardamos si alguna de estas producciones es lambda.
+                        n_first = self.compute_first(pr.right)
+                        if '' in n_first and lambda_flag is False:
+                            lambda_flag = True
+                        primero = primero.union(self.compute_first(pr.right))
+            else:
+                SyntaxError #TODO: creo que actually no need
+
+        # Si el primero del primer elemento no tenia lambda, lo quitamos si
+        # estaba en el conjunto.
+        if lambda_flag is False:
+            return primero - {''}
+        return primero
 
 
     def compute_follow(self, symbol: str) -> AbstractSet[str]:
