@@ -189,7 +189,7 @@ class Grammar:
                 # y, si tenia lambda y era el ultimo caracter, calculamos el
                 # siguiente de la izda.
                 else:
-                    n_first = self.compute_first(dcha[index + 1])
+                    n_first = self.compute_first(dcha[index + 1:])
                     siguiente = siguiente.union(n_first - {''})
                     if '' in n_first and index == len(dcha) - 1:
                         siguiente = siguiente.union(self.compute_follow(pr.left))
