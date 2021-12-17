@@ -110,7 +110,27 @@ def test_d():
     #dot_visitor.visit(my_ast)
     if_remover = ASTRemoveConstantIf()
     new_ast = if_remover.visit(my_ast)
-    #dot_visitor = ASTDotVisitor()
-    #dot_visitor.visit(new_ast)
+    dot_visitor = ASTDotVisitor()
+    dot_visitor.visit(new_ast)
+
+# Ejemplo 2 apartado (d)
+a = 3
+def my_fun_d2(p):
+    if False:
+        return 1
+    elif False:
+        return 2
+    elif True:
+        return 3
+    else:
+        return 4
+
+def test_d2():
+    source = inspect.getsource(my_fun_d2)
+    my_ast = ast.parse(source)
+    if_remover = ASTRemoveConstantIf()
+    new_ast = if_remover.visit(my_ast)
+    dot_visitor = ASTDotVisitor()
+    dot_visitor.visit(new_ast)
     
-test_b()
+test_d2()

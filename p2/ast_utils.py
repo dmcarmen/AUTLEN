@@ -91,10 +91,16 @@ class ASTReplaceNum(ast.NodeTransformer):
 
 class ASTRemoveConstantIf(ast.NodeTransformer):
     def visit_If(self, node: ast.If) -> Union[ast.AST, List[ast.stmt]]:
-        # usar node.test, node.test.value, node.body y node.orelse
-        if(isinstance(node.test, ast.Constant)):
-            if(str(node.test.value) == "True"):
-                return node.body
-            elif(node.test.value == "False"):
-                return node.orelse
-        return None
+        while(True):
+            if(isinstance(node,ast.If)):
+                if(isinstance(node.test, ast.Constant)):
+                    if(str(node.test.value) == "True"):
+                        return node.body
+                    elif(str(node.test.value) == "False"):
+                        node = node.orelse[0]
+                    else:
+                        break
+            else:
+                print(1)
+                break
+        return node
