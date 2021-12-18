@@ -103,22 +103,21 @@ class Grammar:
             f"axiom={self.axiom!r}, "
             f"productions={self.productions!r})"
         )
-
-
-    def compute_first(self, sentence: str) -> AbstractSet[str]:
+    
+    def compute_first_aux(self, sentence: str) -> AbstractSet[str]:
         """
-        Method to compute the first set of a string.
-
+        Auxiliar function to compute first without checking elements are valid each iteration
+        
         Args:
             str: string whose first set is to be computed.
 
         Returns:
             First set of str.
         """
-
-        # Si la produccion es lambda, devolvemos lambda
+        
+         # Si la produccion es lambda, devolvemos lambda
         if sentence == '':
-            return {''}
+            return {''} 
 
         primero = set()
         lambda_flag = False
@@ -126,7 +125,7 @@ class Grammar:
         for ch in sentence:
 
             # Si ya hemmos añadido elementos al set de primeros y
-            #   el primero del ultimo simbolo no terminal no tenia lambda
+            # el primero del ultimo simbolo no terminal no tenia lambda
             # o el siguiente caracter es terminal.
             if len(primero) > 0:
                 if lambda_flag is False:
@@ -143,22 +142,34 @@ class Grammar:
                 lambda_flag = False
                 for pr in self.productions:
                     if pr.left == ch:
-                        #TODO: tengo miedo de que entre en bucle... if pr.left != pr.right[0]? comprobando None.
                         # Calculamos el primero de cada produccion y lo añadimos.
                         # Guardamos si alguna de estas producciones es lambda.
-                        n_first = self.compute_first(pr.right)
+                        n_first = self.compute_first_aux(pr.right)
                         if '' in n_first and lambda_flag is False:
                             lambda_flag = True
-                        primero = primero.union(self.compute_first(pr.right))
-            else:
-                SyntaxError #TODO: creo que actually no need
+                        primero = primero.union(n_first)
 
-        # Si el primero del primer elemento no tenia lambda, lo quitamos si
-        # estaba en el conjunto.
+        # Si la sentencia no puede ser lambda la quitamos.
         if lambda_flag is False:
             return primero - {''}
         return primero
 
+    def compute_first(self, sentence: str) -> AbstractSet[str]:
+        """
+        Method to compute the first set of a string.
+
+        Args:
+            str: string whose first set is to be computed.
+
+        Returns:
+            First set of str.
+        """
+        #Comprobamos que todos los elementos de la cadena son válidos
+        for ch in sentence:
+            if not (ch in self.terminals or ch in self.non_terminals):
+                raise ValueError
+
+        return self.compute_first_aux(sentence)
 
     def compute_follow(self, symbol: str) -> AbstractSet[str]:
         """
