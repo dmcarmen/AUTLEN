@@ -170,10 +170,26 @@ class Grammar:
                 raise ValueError
 
         return self.compute_first_aux(sentence)
-
+    
     def compute_follow(self, symbol: str) -> AbstractSet[str]:
         """
         Method to compute the follow set of a non-terminal symbol.
+
+        Args:
+            symbol: non-terminal whose follow set is to be computed.
+
+        Returns:
+            Follow set of symbol.
+        """
+        
+        if not symbol in self.non_terminals:
+            raise ValueError
+        return self.compute_follow_aux(symbol)
+
+
+    def compute_follow_aux(self, symbol: str) -> AbstractSet[str]:
+        """
+        Auxiliar function to compute the following of a non-terminal.
 
         Args:
             symbol: non-terminal whose follow set is to be computed.
