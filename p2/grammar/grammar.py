@@ -235,8 +235,29 @@ class Grammar:
             LL(1) table for the grammar, or None if the grammar is not LL(1).
         """
 
-	# TO-DO: Complete this method for exercise 5...
+        table = LL1Table(self.non_terminals, self.terminals, set())
 
+        for pr in self.productions:
+            n_first = self.compute_first(pr.right)
+
+            for t in n_first:
+                if t != '':
+                    cell = TableCell(pr.left, t, pr.right)
+                    try:
+                        table.add_cell(cell)
+                    except RepeatedCellError:
+                        return None
+
+            if '' in n_first:
+                n_next = self.compute_follow(pr.left)
+                for t in n_next:
+                    if t != '':
+                        cell = TableCell(pr.left, t, pr.right)
+                        try:
+                            table.add_cell(cell)
+                        except RepeatedCellError:
+                            return None
+        return table
 
     def is_ll1(self) -> bool:
         return self.get_ll1_table() is not None
