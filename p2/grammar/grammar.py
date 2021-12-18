@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import deque
 from typing import AbstractSet, Collection, MutableSet, Optional
 
+
 class RepeatedCellError(Exception):
     """Exception for repeated cells in LL(1) tables."""
 
@@ -313,33 +314,42 @@ class LL1Table:
         """
 
         # Iniciamos la pila con el simbolo de fin de cadena y el simbolo de entrada
-        pila = ['$', start]
+        pila = [('$',-1), (start, 0)]
         next = 0
-
-        #root = ParseTree(root = start)
+        tree = ParseTree(root = start)
+        list_tree = [tree]
 
         # Mientras la pila tenga elementos (y la string) analizamos
-        while len(pila) > 0 and next > len(input_string) - 1:
+        while len(pila) > 0 and next < len(input_string):
             # Cogemos el ultimo elemento de la pila.
-            elem = pila.pop()
+            elem, pos = pila.pop()
 
             # Si es terminal, comprobamos la cadena y pasamos al siguiente
             # caracter si son iguales. Si no, SyntaxError.
             if elem in self.terminals:
                 if elem == input_string[next]:
+                    #list_tree[parent].add_children(ParseTree(root = elem))
                     next += 1
                 else:
                     raise SyntaxError
 
             # Si es no terminal, comprobamos las celdas de la tabla LL1
-            # y sustituimos por la expresion derecha si exsite.
+            # y sustituimos por la expresion derecha si existe.
             # Si no, SyntaxError.
             elif elem in self.non_terminals:
-                if (elem, input_string[next]) in self.cells:
-                    right = self.cells[(elem, input_string[next])]
+                cell_key = (elem, input_string[next])
+                if cell_key in self.cells:
+                    right = self.cells[cell_key]
                     right = list(right)
                     right.reverse()
-                    pila += right
+                    children = []
+                    for i in right:
+                        node = ParseTree(root = i)
+                        length = len(list_tree)
+                        list_tree.append(node)
+                        pila += [(i, length)]
+                        children.append(node)
+                    list_tree[pos].add_children(children)
                 else:
                     raise SyntaxError
             # Si no esta en la lista de simbolos, SyntaxError.
@@ -350,7 +360,7 @@ class LL1Table:
         if next < len(input_string) or len(pila) > 0:
             raise SyntaxError
 
-        return ParseTree("") # Return an empty tree by default.
+        return tree # Return an empty tree by default.
 
 
 class ParseTree():
