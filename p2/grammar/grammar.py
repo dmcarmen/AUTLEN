@@ -104,7 +104,7 @@ class Grammar:
             f"productions={self.productions!r})"
         )
     
-    def compute_first_aux(self, sentence: str) -> AbstractSet[str]:
+    def compute_first_aux(self, sentence: str, computed) -> AbstractSet[str]:
         """
         Auxiliar function to compute first without checking elements are valid each iteration
         
@@ -144,10 +144,11 @@ class Grammar:
                     if pr.left == ch:
                         # Calculamos el primero de cada produccion y lo añadimos.
                         # Guardamos si alguna de estas producciones es lambda.
-                        n_first = self.compute_first_aux(pr.right)
-                        if '' in n_first and lambda_flag is False:
-                            lambda_flag = True
-                        primero = primero.union(n_first)
+                        if(pr.right not in computed):
+                            n_first = self.compute_first_aux(pr.right, computed + [pr.right])
+                            if '' in n_first and lambda_flag is False:
+                                lambda_flag = True
+                            primero = primero.union(n_first)
 
         # Si la sentencia no puede ser lambda la quitamos.
         if lambda_flag is False:
@@ -169,7 +170,7 @@ class Grammar:
             if not (ch in self.terminals or ch in self.non_terminals):
                 raise ValueError
 
-        return self.compute_first_aux(sentence)
+        return self.compute_first_aux(sentence, [sentence])
     
     def compute_follow(self, symbol: str) -> AbstractSet[str]:
         """
@@ -184,10 +185,10 @@ class Grammar:
         
         if not symbol in self.non_terminals:
             raise ValueError
-        return self.compute_follow_aux(symbol)
+        return self.compute_follow_aux(symbol, [symbol])
 
 
-    def compute_follow_aux(self, symbol: str) -> AbstractSet[str]:
+    def compute_follow_aux(self, symbol: str, computed) -> AbstractSet[str]:
         """
         Auxiliar function to compute the following of a non-terminal.
 
@@ -197,7 +198,6 @@ class Grammar:
         Returns:
             Follow set of symbol.
         """
-        # TODO: recursion infinita
         siguiente = set()
 
         # Si es el axioma añadimos el fin de cadena.
@@ -211,18 +211,18 @@ class Grammar:
             # Mientras encontremos el simbolo en una produccion
             while index != -1:
                 # Si esta al final de la cadena añadimos siguientes de su izda.
-                if index == len(dcha) - 1:
-                    siguiente = siguiente.union(self.compute_follow(pr.left))
+                if index == len(dcha) - 1 and pr.left not in computed:
+                    siguiente = siguiente.union(self.compute_follow_aux(pr.left, computed + [pr.left]))
                 # Si no, añadimos los primeros del siguiente simbolo sin lambda
                 # y, si tenia lambda y era el ultimo caracter, calculamos el
                 # siguiente de la izda.
                 else:
                     n_first = self.compute_first(dcha[index + 1:])
                     siguiente = siguiente.union(n_first - {''})
-                    if '' in n_first and index == len(dcha) - 1:
-                        siguiente = siguiente.union(self.compute_follow(pr.left))
-                    dcha = dcha[index+1:]
-                    index = dcha.find(symbol)
+                    if '' in n_first and pr.left not in computed:
+                        siguiente = siguiente.union(self.compute_follow_aux(pr.left, computed + [pr.left]))
+                dcha = dcha[index+1:]
+                index = dcha.find(symbol)
         return siguiente
 
 
@@ -400,9 +400,8 @@ class LL1Table:
 
             # Si es terminal, comprobamos la cadena y pasamos al siguiente
             # caracter si son iguales. Si no, SyntaxError.
-            if elem in self.terminals:
+            if elem in self.terminals or elem == '$':
                 if elem == input_string[next]:
-                    #list_tree[parent].add_children(ParseTree(root = elem))
                     next += 1
                 else:
                     raise SyntaxError
@@ -425,7 +424,7 @@ class LL1Table:
                         children.append(node)
                     list_tree[pos].add_children(children)
                 else:
-                    raise SyntaxError
+                    raise SyntaxError            
             # Si no esta en la lista de simbolos, SyntaxError.
             else:
                 raise SyntaxError
