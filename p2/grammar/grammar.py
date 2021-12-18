@@ -170,8 +170,34 @@ class Grammar:
         Returns:
             Follow set of symbol.
         """
+        # TODO: recursion infinita
+        siguiente = set()
 
-	# TO-DO: Complete this method for exercise 4...
+        # Si es el axioma añadimos el fin de cadena.
+        if symbol == self.axiom:
+            siguiente = {'$'}
+
+        # Buscamos el simbolo en cada produccion.
+        for pr in self.productions:
+            dcha = pr.right
+            index = dcha.find(symbol)
+            # Mientras encontremos el simbolo en una produccion
+            while index != -1:
+                # Si esta al final de la cadena añadimos siguientes de su izda.
+                if index == len(dcha) - 1:
+                    siguiente = siguiente.union(self.compute_follow(pr.left))
+                # Si no, añadimos los primeros del siguiente simbolo sin lambda
+                # y, si tenia lambda y era el ultimo caracter, calculamos el
+                # siguiente de la izda.
+                else:
+                    n_first = self.compute_first(dcha[index + 1:])
+                    siguiente = siguiente.union(n_first - {''})
+                    if '' in n_first and index == len(dcha) - 1:
+                        siguiente = siguiente.union(self.compute_follow(pr.left))
+                    dcha = dcha[index+1:]
+                    index = dcha.find(symbol)
+        return siguiente
+
 
 
     def get_ll1_table(self) -> Optional[LL1Table]:
