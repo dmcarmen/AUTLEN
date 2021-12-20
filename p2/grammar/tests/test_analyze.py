@@ -1,7 +1,7 @@
 import unittest
 
 from grammar.grammar import Grammar, LL1Table, TableCell, ParseTree, SyntaxError
-from grammar.utils import GrammarFormat
+from grammar.utils import GrammarFormat, parse_tree_to_dot
 from typing import Optional, Type
 
 class TestAnalyze(unittest.TestCase):
@@ -181,6 +181,41 @@ class TestAnalyze(unittest.TestCase):
         self._check_analyze_from_grammar(grammar, "i*i$i", "E", exception=SyntaxError)
         self._check_analyze_from_grammar(grammar, "i*i", "E", exception=SyntaxError)
         self._check_analyze_from_grammar(grammar, "+i*i", "E", exception=SyntaxError)
+    
+    def test_case7(self) -> None:
+        """Test for  LL1 grammar."""
+        grammar_str = """
+        S->V=E
+        V->iR
+        R->
+        R->[E]
+        E->k
+        E->i
+        E->f(k)
+        """
+        grammar = GrammarFormat.read(grammar_str)
+        self._check_analyze_from_grammar(grammar, "i[i]=i$", "S")
+        self._check_analyze_from_grammar(grammar, "i=f(k)$", "S")
+        self._check_analyze_from_grammar(grammar, "i[f(k)]=f(k)$", "S")
+        self._check_analyze_from_grammar(grammar, "i=i$", "S")
+        self._check_analyze_from_grammar(grammar, "=i$", "E", exception=SyntaxError)
+        self._check_analyze_from_grammar(grammar, "ii=i$", "E", exception=SyntaxError)
+
+    def test_case8(self) -> None:
+        """Test for parse tree construction."""
+        grammar_str = """
+        S->V=E
+        V->iR
+        R->
+        R->[E]
+        E->k
+        E->i
+        E->f(k)
+        """
+        grammar = GrammarFormat.read(grammar_str)
+        table = grammar.get_ll1_table()
+        tree = table.analyze("i=f(k)$","S")
+        print(parse_tree_to_dot(tree))
 
 if __name__ == '__main__':
     unittest.main()

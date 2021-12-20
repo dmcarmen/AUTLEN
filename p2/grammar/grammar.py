@@ -102,6 +102,11 @@ class Grammar:
             f"productions={self.productions!r})"
         )
     
+    """
+    Hemos usado dos función auxiliar para calcular primeros y siguientes de manera más cómoda.
+    Este codigo se puede realizar de manera sencilla prescindiendo de estas.
+    """
+    
     def compute_first_aux(self, sentence: str, computed: list[str]) -> AbstractSet[str]:
         """
         Auxiliar function to compute first without checking elements are valid each iteration
