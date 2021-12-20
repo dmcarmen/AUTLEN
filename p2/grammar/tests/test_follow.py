@@ -34,6 +34,24 @@ class TestFollow(unittest.TestCase):
         self._check_follow(grammar, "X", {'$', ')'})
         self._check_follow(grammar, "Y", {'$', ')', '+'})
 
+    def test_case2(self) -> None:
+        """Test for not LL1 grammar."""
+        grammar_str = """
+        X -> I*AD
+        I -> A*I
+        I -> a
+        I ->
+        A -> aa*A
+        A ->
+        A -> a
+        D -> *
+        D ->
+        """
+        grammar = GrammarFormat.read(grammar_str)
+        self._check_follow(grammar, "A", {'$', '*'})
+        self._check_follow(grammar, "D", {'$'})
+        self._check_follow(grammar, "I", {'*'})
+        self._check_follow(grammar, "X", {'$'})
 
 if __name__ == '__main__':
     unittest.main()

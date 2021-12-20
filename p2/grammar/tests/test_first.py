@@ -39,6 +39,24 @@ class TestFirst(unittest.TestCase):
         self._check_first(grammar, "YX", {'+', '*', ''})
         self._check_first(grammar, "YXT", {'+', '*', 'i', '('})
 
+    def test_case2(self) -> None:
+        """Test for not LL1 grammar."""
+        grammar_str = """
+        X -> I*AD
+        I -> A*I
+        I -> a
+        I ->
+        A -> aa*A
+        A ->
+        A -> a
+        D -> *
+        D ->
+        """
+        grammar = GrammarFormat.read(grammar_str)
+        self._check_first(grammar, "A", {'', 'a'})
+        self._check_first(grammar, "D", {'', '*'})
+        self._check_first(grammar, "I", {'', 'a', '*'})
+        self._check_first(grammar, "X", {'a', '*'})
 
 if __name__ == '__main__':
     unittest.main()

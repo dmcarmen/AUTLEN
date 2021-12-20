@@ -100,6 +100,24 @@ class TestAnalyze(unittest.TestCase):
         self._check_analyze_from_grammar(grammar, "i*i", "E", exception=SyntaxError)
         self._check_analyze_from_grammar(grammar, "+i*i", "E", exception=SyntaxError)
 
+    def test_case4(self) -> None:
+        """Test for not LL1 grammar."""
+        grammar_str = """
+        X -> I*AD
+        I -> A*I
+        I -> a
+        I ->
+        A -> aa*A
+        A ->
+        A -> a
+        D -> *
+        D ->
+        """
+        grammar = GrammarFormat.read(grammar_str)
+        table = grammar.get_ll1_table()
+        self.assertEqual(table, None)
+
+
     def test_case3(self) -> None:
         """Test for parse tree construction."""
         terminals = {"(", ")", "i", "+", "*", "$"}
@@ -128,10 +146,8 @@ class TestAnalyze(unittest.TestCase):
         t09 = ParseTree("i")
         t10 = ParseTree("T", [t09, t08])
         tree = ParseTree("E", [t10, t02])
-        
+
         self._check_parse_tree(table, "i*i$", "E", tree)
 
 if __name__ == '__main__':
     unittest.main()
-
-
