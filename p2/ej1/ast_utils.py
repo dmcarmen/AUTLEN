@@ -5,12 +5,14 @@ import types
 from typing import List, Union, Optional
 
 class ASTMagicNumberDetector(ast.NodeVisitor):
-    def __init__(self):
+    def __init__(self) -> None:
         self.magic_numbers = 0
 
-    def _check_magic_number(self, number: complex) -> None:
-        if isinstance(number, numbers.Number) and number != 0 and number != 1 and number != (1j):
+    def _check_magic_number(self, number: complex) -> bool:
+        if isinstance(number, numbers.Number) and number != complex(0) and number != complex(1) and number != (1j):
             return True
+        else:
+            return False
 
     # Para Python < 3.8
     def visit_Num(self, node: ast.Num) -> None:

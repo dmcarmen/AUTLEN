@@ -110,8 +110,8 @@ def test_d():
     #dot_visitor.visit(my_ast)
     if_remover = ASTRemoveConstantIf()
     new_ast = if_remover.visit(my_ast)
-    dot_visitor = ASTDotVisitor()
-    dot_visitor.visit(new_ast)
+    dot_visitor = ASTDotVisitor() 
+    dot_visitor.visit(new_ast) 
 
 # Ejemplo 2 apartado (d)
 a = 3
@@ -133,4 +133,8 @@ def test_d2():
     dot_visitor = ASTDotVisitor()
     dot_visitor.visit(new_ast)
     
+test_a()
+test_b()
+test_c()
+test_d()
 test_d2()

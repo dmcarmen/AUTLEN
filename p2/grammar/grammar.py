@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from collections import deque
 from typing import AbstractSet, Collection, MutableSet, Optional
-
 
 class RepeatedCellError(Exception):
     """Exception for repeated cells in LL(1) tables."""
@@ -104,7 +102,7 @@ class Grammar:
             f"productions={self.productions!r})"
         )
     
-    def compute_first_aux(self, sentence: str, computed) -> AbstractSet[str]:
+    def compute_first_aux(self, sentence: str, computed: list[str]) -> AbstractSet[str]:
         """
         Auxiliar function to compute first without checking elements are valid each iteration
         
@@ -119,7 +117,7 @@ class Grammar:
         if sentence == '':
             return {''} 
 
-        primero = set()
+        primero: set[str] = set()
         lambda_flag = False
 
         for ch in sentence:
@@ -188,7 +186,7 @@ class Grammar:
         return self.compute_follow_aux(symbol, [symbol])
 
 
-    def compute_follow_aux(self, symbol: str, computed) -> AbstractSet[str]:
+    def compute_follow_aux(self, symbol: str, computed: list[str]) -> AbstractSet[str]:
         """
         Auxiliar function to compute the following of a non-terminal.
 
@@ -198,7 +196,7 @@ class Grammar:
         Returns:
             Follow set of symbol.
         """
-        siguiente = set()
+        siguiente: set[str] = set()
 
         # Si es el axioma añadimos el fin de cadena.
         if symbol == self.axiom:
@@ -418,9 +416,9 @@ class LL1Table:
                         node = ParseTree(root = "λ")
                         children.append(node)
                     else:
-                        right = list(right)
-                        right.reverse()
-                        for elem in right:
+                        right_list = list(right)
+                        right_list.reverse()
+                        for elem in right_list:
                             node = ParseTree(root = elem)
                             length = len(list_tree)
                             list_tree.append(node)
