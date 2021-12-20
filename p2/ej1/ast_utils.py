@@ -95,12 +95,14 @@ class ASTRemoveConstantIf(ast.NodeTransformer):
             if(isinstance(node,ast.If)):
                 if(isinstance(node.test, ast.Constant)):
                     if(str(node.test.value) == "True"):
-                        return node.body
+                        nodes = []
+                        for elem in node.body:
+                            nodes.append(self.visit(elem))
+                        return nodes
                     elif(str(node.test.value) == "False"):
                         node = node.orelse[0]
                     else:
                         break
             else:
-                print(1)
                 break
         return node

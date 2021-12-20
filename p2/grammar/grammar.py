@@ -413,15 +413,20 @@ class LL1Table:
                 cell_key = (elem, input_string[next])
                 if cell_key in self.cells:
                     right = self.cells[cell_key]
-                    right = list(right)
-                    right.reverse()
                     children = []
-                    for i in right:
-                        node = ParseTree(root = i)
-                        length = len(list_tree)
-                        list_tree.append(node)
-                        pila += [(i, length)]
+                    if(right == ""):
+                        node = ParseTree(root = "λ")
                         children.append(node)
+                    else:
+                        right = list(right)
+                        right.reverse()
+                        for elem in right:
+                            node = ParseTree(root = elem)
+                            length = len(list_tree)
+                            list_tree.append(node)
+                            pila += [(elem, length)]
+                            children.append(node)
+                    children.reverse()
                     list_tree[pos].add_children(children)
                 else:
                     raise SyntaxError            
