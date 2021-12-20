@@ -42,7 +42,7 @@ class TestIfASTRemoveConstantIf(unittest.TestCase):
         if isinstance(node, ast.Num):
             self.assertEqual(node.n, value)
         else:
-            self.assertEqual(node.value, value)
+            self.assertEqual(node.value, value) # type: ignore
 
     def test_simple(self) -> None:
         """Test optimization simple case."""

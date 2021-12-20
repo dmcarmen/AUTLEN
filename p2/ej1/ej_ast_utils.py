@@ -78,7 +78,7 @@ def test_b() -> None:
 '''
 
 # Ejemplo apartado (c)
-def my_fun_c(p):
+def my_fun_c(p): # type: ignore
     if p == 1:
         print(p + 1j)
     elif p == 5:

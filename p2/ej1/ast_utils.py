@@ -70,7 +70,7 @@ def transform_code(f: Callable[...,Any], transformer: ast.NodeTransformer) -> Ca
 
     old_code = f.__code__
     code = compile(new_tree, old_code.co_filename, 'exec')
-    new_f = types.FunctionType(code.co_consts[0], f.__globals__)
+    new_f = types.FunctionType(code.co_consts[0], f.__globals__) # type: ignore
 
     return new_f
 
