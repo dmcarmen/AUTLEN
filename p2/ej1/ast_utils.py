@@ -27,18 +27,20 @@ class ASTMagicNumberDetector(ast.NodeVisitor):
 
 class ASTDotVisitor(ast.NodeVisitor):
     def __init__(self) -> None:
+        self.level = 0
         self.n_node = 0
+        self.last_parent: Optional[int] = None
+        self.last_field_name = ""
 
-    def generic_visit(self, node: ast.AST, parent: Optional[int] = None, field_name: str = "", level: int = 0) -> None:
+    def generic_visit(self, node: ast.AST) -> None:
+        padre_num = self.last_parent
+        padre_field_name = self.last_field_name
         this_node = self.n_node
         if self.n_node == 0:
             print('digraph {')
         self.n_node += 1
 
         n = f's{this_node}[label="{type(node).__name__}('
-
-        if parent != None:
-            print(f's{parent} -> s{this_node}[label="{field_name}"]')
 
         n_args = ''
 
@@ -47,9 +49,15 @@ class ASTDotVisitor(ast.NodeVisitor):
             if isinstance(value, list):
                 for item in value:
                     if isinstance(item, ast.AST):
-                        self.generic_visit(item, this_node, field_name, level + 1)
+                        self.level += 1
+                        self.last_parent = this_node
+                        self.last_field_name = field_name
+                        self.visit(item)
             elif isinstance(value, ast.AST):
-                self.generic_visit(value, this_node, field_name, level + 1)
+                self.level += 1
+                self.last_parent = this_node
+                self.last_field_name = field_name
+                self.visit(value)
             else:
                 if len(n_args) == 0:
                     n_args = f'{field}={value}'
@@ -58,8 +66,11 @@ class ASTDotVisitor(ast.NodeVisitor):
 
         print(n + n_args + ')"]')
 
-        level -= 1
-        if level == -1:
+        if padre_num != None:
+            print(f's{padre_num} -> s{this_node}[label="{padre_field_name}"]')
+
+        self.level -= 1
+        if self.level == -1:
             print("}")
 
 
@@ -95,7 +106,7 @@ class ASTRemoveConstantIf(ast.NodeTransformer):
     def visit_If(self, node: ast.If) -> Optional[Union[ast.AST, List[ast.stmt]]]:
         while(True):
             if(isinstance(node,ast.If)):
-                if(isinstance(node.test, ast.Constant)):
+                if(isinstance(node.test, ast.NameConstant) or isinstance(node.test, ast.Constant)):
                     if(str(node.test.value) == "True"):
                         nodes = []
                         for elem in node.body:

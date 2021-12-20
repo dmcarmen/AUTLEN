@@ -23,7 +23,7 @@ def test_a() -> None:
     print(magic_detector.magic_numbers)
 
 # Ejemplo apartado (b)
-def print_next_if_pos(num: int) -> None:
+def print_next_if_pos(num):
     if num > 0:
         print(num + 1)
 
@@ -97,7 +97,7 @@ def test_c() -> None:
     # Debería imprimir 6
 
 # Ejemplo apartado (d)
-def my_fun_d() -> int:
+def my_fun_d(p):
     if True:
         return 1
     else:
@@ -106,8 +106,6 @@ def my_fun_d() -> int:
 def test_d() -> None:
     source = inspect.getsource(my_fun_d)
     my_ast = ast.parse(source)
-    #dot_visitor = ASTDotVisitor()
-    #dot_visitor.visit(my_ast)
     if_remover = ASTRemoveConstantIf()
     new_ast = if_remover.visit(my_ast)
     dot_visitor = ASTDotVisitor()
@@ -131,7 +129,7 @@ def test_d2() -> None:
     new_ast = if_remover.visit(my_ast)
     dot_visitor = ASTDotVisitor()
     dot_visitor.visit(new_ast)
-
+    
 test_a()
 test_b()
 test_c()
