@@ -114,7 +114,6 @@ def test_d() -> None:
     dot_visitor.visit(new_ast)
 
 # Ejemplo 2 apartado (d)
-a = 3
 def my_fun_d2() -> int:
     if False:
         return 1

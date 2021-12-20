@@ -29,7 +29,7 @@ class ASTDotVisitor(ast.NodeVisitor):
     def __init__(self) -> None:
         self.n_node = 0
 
-    def visit(self, node: ast.AST, parent: Optional[int] = None, field_name: str = "", level: int = 0) -> None:
+    def generic_visit(self, node: ast.AST, parent: Optional[int] = None, field_name: str = "", level: int = 0) -> None:
         this_node = self.n_node
         if self.n_node == 0:
             print('digraph {')
@@ -47,9 +47,9 @@ class ASTDotVisitor(ast.NodeVisitor):
             if isinstance(value, list):
                 for item in value:
                     if isinstance(item, ast.AST):
-                        self.visit(item, this_node, field_name, level + 1)
+                        self.generic_visit(item, this_node, field_name, level + 1)
             elif isinstance(value, ast.AST):
-                self.visit(value, this_node, field_name, level + 1)
+                self.generic_visit(value, this_node, field_name, level + 1)
             else:
                 if len(n_args) == 0:
                     n_args = f'{field}={value}'
