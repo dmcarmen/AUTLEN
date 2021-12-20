@@ -29,6 +29,11 @@ def more_nested_fun() -> int:
     else:
         return 0
 
+def not_if() -> int:
+    if False:
+        return 1
+    return 0
+
 class TestIfASTRemoveConstantIf(unittest.TestCase):
     """Tests for ASTRemoveConstantIf."""
 
@@ -86,6 +91,21 @@ class TestIfASTRemoveConstantIf(unittest.TestCase):
         ret1val = ret1.value
         self._assertNumNodeValue(ret1val, 2)
 
+    def test_not(self) -> None:
+        """Test optimization simple case."""
+        source = inspect.getsource(not_if)
+        parsed_ast = ast.parse(source)
+        transformed_ast = ASTRemoveConstantIf().visit(parsed_ast)
+
+        self.assertIsInstance(transformed_ast, ast.Module)
+        self.assertTrue(len(transformed_ast.body) == 1)
+        fundef = transformed_ast.body[0]
+        self.assertIsInstance(fundef, ast.FunctionDef)
+        self.assertTrue(len(fundef.body) == 1)
+        ret1 = fundef.body[0]
+        self.assertIsInstance(ret1, ast.Return)
+        ret1val = ret1.value
+        self._assertNumNodeValue(ret1val, 0)
 
 if __name__ == "__main__":
     unittest.main()

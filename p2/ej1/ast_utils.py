@@ -63,14 +63,14 @@ class ASTDotVisitor(ast.NodeVisitor):
             print("}")
 
 
-def transform_code(f, transformer):
+def transform_code(f: Callable[...,Any], transformer: ast.NodeTransformer) -> Callable[...,Any]:
     f_ast = ast.parse(inspect.getsource(f))
 
     new_tree = ast.fix_missing_locations(transformer.visit(f_ast))
 
     old_code = f.__code__
     code = compile(new_tree, old_code.co_filename, 'exec')
-    new_f = types.FunctionType(code.co_consts[0], f.__globals__)
+    new_f = types.FunctionType(code.co_consts[0], f.__globals__) # type: ignore
 
     return new_f
 
@@ -102,7 +102,10 @@ class ASTRemoveConstantIf(ast.NodeTransformer):
                             nodes.append(self.visit(elem))
                         return nodes
                     elif(str(node.test.value) == "False"):
-                        node = node.orelse[0]
+                        if len(node.orelse) > 0:
+                            node = node.orelse[0]
+                        else:
+                            return None
                     else:
                         break
             else:
