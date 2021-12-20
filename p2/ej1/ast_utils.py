@@ -70,7 +70,7 @@ def transform_code(f: Callable[...,Any], transformer: ast.NodeTransformer) -> Ca
 
     old_code = f.__code__
     code = compile(new_tree, old_code.co_filename, 'exec')
-    new_f = types.FunctionType(code.co_consts[0], f.__globals__) # type: ignore
+    new_f = types.FunctionType(code.co_consts[0], f.__globals__)
 
     return new_f
 
@@ -92,7 +92,7 @@ class ASTReplaceNum(ast.NodeTransformer):
             return node
 
 class ASTRemoveConstantIf(ast.NodeTransformer):
-    def visit_If(self, node: ast.If) -> Union[ast.AST, List[ast.stmt]]:
+    def visit_If(self, node: ast.If) -> Optional[Union[ast.AST, List[ast.stmt]]]:
         while(True):
             if(isinstance(node,ast.If)):
                 if(isinstance(node.test, ast.Constant)):
