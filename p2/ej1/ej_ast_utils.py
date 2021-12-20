@@ -4,7 +4,7 @@ import inspect
 from ast_utils import ASTMagicNumberDetector, ASTDotVisitor, ASTReplaceNum, transform_code, ASTRemoveConstantIf
 
 # Ejemplo apartado (a)
-def my_fun_a(p):
+def my_fun_a(p: complex) -> None:
     if p == 1:
         print(p + 1j)
     elif p == 5:
@@ -12,7 +12,7 @@ def my_fun_a(p):
     else:
         print(p - 27.3 * 3j)
 
-def test_a():
+def test_a() -> None:
     source = inspect.getsource(my_fun_a)
     my_ast = ast.parse(source)
 
@@ -23,11 +23,11 @@ def test_a():
     print(magic_detector.magic_numbers)
 
 # Ejemplo apartado (b)
-def print_next_if_pos(num):
+def print_next_if_pos(num: int) -> None:
     if num > 0:
         print(num + 1)
 
-def test_b():
+def test_b() -> None:
     source = inspect.getsource(print_next_if_pos)
     my_ast = ast.parse(source)
 
@@ -86,7 +86,7 @@ def my_fun_c(p):
     else:
         print(p - 27.3 * 3j)
 
-def test_c():
+def test_c() -> None:
     num_replacer = ASTReplaceNum(3)
     new_fun = transform_code(my_fun_c, num_replacer)
 
@@ -94,28 +94,28 @@ def test_c():
     # Debería imprimir -8
 
     new_fun(3)
-# Debería imprimir 6
+    # Debería imprimir 6
 
 # Ejemplo apartado (d)
-def my_fun_d(p):
+def my_fun_d() -> int:
     if True:
         return 1
     else:
         return 0
 
-def test_d():
+def test_d() -> None:
     source = inspect.getsource(my_fun_d)
     my_ast = ast.parse(source)
     #dot_visitor = ASTDotVisitor()
     #dot_visitor.visit(my_ast)
     if_remover = ASTRemoveConstantIf()
     new_ast = if_remover.visit(my_ast)
-    dot_visitor = ASTDotVisitor() 
-    dot_visitor.visit(new_ast) 
+    dot_visitor = ASTDotVisitor()
+    dot_visitor.visit(new_ast)
 
 # Ejemplo 2 apartado (d)
 a = 3
-def my_fun_d2(p):
+def my_fun_d2() -> int:
     if False:
         return 1
     elif False:
@@ -125,14 +125,14 @@ def my_fun_d2(p):
     else:
         return 4
 
-def test_d2():
+def test_d2() -> None:
     source = inspect.getsource(my_fun_d2)
     my_ast = ast.parse(source)
     if_remover = ASTRemoveConstantIf()
     new_ast = if_remover.visit(my_ast)
     dot_visitor = ASTDotVisitor()
     dot_visitor.visit(new_ast)
-    
+
 test_a()
 test_b()
 test_c()

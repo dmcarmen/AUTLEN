@@ -4,13 +4,13 @@ import unittest
 
 from ast_utils import ASTRemoveConstantIf
 
-def simple_fun():
+def simple_fun() -> int:
     if True:
         return 1
     else:
         return 0
 
-def nested_fun():
+def nested_fun() -> int:
     if True:
         if False:
             return 1
@@ -19,7 +19,7 @@ def nested_fun():
     else:
         return 0
 
-def more_nested_fun():
+def more_nested_fun() -> int:
     if True:
         if False:
             return 1

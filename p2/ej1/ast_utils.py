@@ -2,7 +2,7 @@ import numbers
 import ast
 import inspect
 import types
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Callable, Any
 
 class ASTMagicNumberDetector(ast.NodeVisitor):
     def __init__(self) -> None:
@@ -29,7 +29,7 @@ class ASTDotVisitor(ast.NodeVisitor):
     def __init__(self) -> None:
         self.n_node = 0
 
-    def visit(self, node: ast.AST, parent = None, field_name = "", level = 0) -> None:
+    def visit(self, node: ast.AST, parent: Optional[int] = None, field_name: str = "", level: int = 0) -> None:
         this_node = self.n_node
         if self.n_node == 0:
             print('digraph {')
@@ -58,7 +58,7 @@ class ASTDotVisitor(ast.NodeVisitor):
 
         print(n + n_args + ')"]')
 
-        level -= 1   
+        level -= 1
         if level == -1:
             print("}")
 
@@ -77,12 +77,12 @@ def transform_code(f, transformer):
 class ASTReplaceNum(ast.NodeTransformer):
     def __init__(self , number: complex):
         self.number = number
-    
+
     # Para Python < 3.8
     def visit_Num(self, node: ast.Num) -> ast.AST :
     # devolver un nuevo nodo AST con self.number
         return ast.Num(self.number)
-    
+
     # Para Python >= 3.8
     def visit_Constant(self, node: ast.Constant) -> ast.AST :
     # devolver un nuevo nodo AST con self.number si la constante es un número
